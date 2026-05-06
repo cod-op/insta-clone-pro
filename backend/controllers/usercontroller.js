@@ -36,6 +36,7 @@ const suggestedUsers=async(req,res)=>{
 }
 
 const editProfile=async(req,res)=>{
+
     try{
      const {name,userName,bio,profession,gender}=req.body;
      const user=await User.findById(req.userId).select("-password");
@@ -50,14 +51,15 @@ const editProfile=async(req,res)=>{
             message:"userName already exists"
          })
      }
-     let profileImage;
-     if(req.file){
-        profileImage=await uploadOncloudinary(req.file.path)
-     }
+    if (req.file) {
+    const uploadedUrl = await uploadOncloudinary(req.file.path);
+    if (uploadedUrl) {
+        user.profileImage = uploadedUrl; 
+    }
+   }
 
      user.name=name
      user.userName=userName
-     user.profileImage=profileImage
      user.bio=bio
      user.profession=profession
      user.gender=gender
@@ -65,6 +67,7 @@ const editProfile=async(req,res)=>{
      await user.save()
 
      return res.status(200).json({
+        success: true,
         user
      })
 
