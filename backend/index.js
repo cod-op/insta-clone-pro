@@ -5,6 +5,7 @@ import dbConnect from './config/database.js'
 import cookieParser from 'cookie-parser'
 import authRouter from './routes/authrouter.js'
 import userRouter from './routes/userrouter.js'
+import postRouter from './routes/postrouter.js'
 
 dotenv.config()
 
@@ -22,6 +23,7 @@ app.use(cookieParser())
 
 app.use("/api/auth",authRouter)
 app.use("/api/user",userRouter)
+app.use("/api/post",postRouter)
 
 app.listen(PORT, () => {
    
