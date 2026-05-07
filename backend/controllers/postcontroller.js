@@ -38,21 +38,13 @@ const uploadPost=async (req,res)=>{
 
 const getAllPost = async (req, res) => {
   try {
-    const posts = await Post.find({author:req.userId})
+    const posts = await Post.find({})
       .populate("author", "name userName profileImage") 
       .populate({
         path: "comments.author",
         select: "name userName profileImage"
       })
       .sort({ createdAt: -1 });
-
-   
-    if (!posts || posts.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No posts found"
-      });
-    }
 
     return res.status(200).json({
       posts
