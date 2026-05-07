@@ -1,6 +1,6 @@
-import Reel from '../models/reelmodel'
-import User from '../models/usermodel';
-import uploadOncloudinary from "../config/cloudinary";
+import Reel from '../models/reelmodel.js'
+import User from '../models/usermodel.js';
+import uploadOncloudinary from "../config/cloudinary.js";
 
 const uploadReel=async (req,res)=>{
      try{

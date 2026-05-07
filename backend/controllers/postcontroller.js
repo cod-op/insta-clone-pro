@@ -1,6 +1,6 @@
-import uploadOncloudinary from "../config/cloudinary";
-import Post from '../models/postmodel'
-import User from "../models/usermodel";
+import uploadOncloudinary from "../config/cloudinary.js";
+import Post from '../models/postmodel.js'
+import User from "../models/usermodel.js";
 
 const uploadPost=async (req,res)=>{
      try{

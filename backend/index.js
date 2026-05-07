@@ -7,6 +7,7 @@ import authRouter from './routes/authrouter.js'
 import userRouter from './routes/userrouter.js'
 import postRouter from './routes/postrouter.js'
 import reelRouter from './routes/reelrouter.js'
+import storyRouter from './routes/storyrouter.js'
 
 dotenv.config()
 
@@ -26,6 +27,7 @@ app.use("/api/auth",authRouter)
 app.use("/api/user",userRouter)
 app.use("/api/post",postRouter)
 app.use("/api/post",reelRouter)
+app.use("/api/story",storyRouter)
 
 app.listen(PORT, () => {
    
