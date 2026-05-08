@@ -1,6 +1,6 @@
 import express from "express"
-import {uploadPost,getAllPost,like,comment,saved} from '../controllers/postcontroller'
-import isAuth from "../middlewares/isAuth"
+import {uploadPost,getAllPost,like,comment,saved} from '../controllers/postcontroller.js'
+import isAuth from "../middlewares/isAuth.js"
 import { upload } from "../middlewares/multer.js";
 
 const postRouter=express.Router()

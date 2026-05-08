@@ -1,6 +1,6 @@
 import express from "express"
-import  {uploadStory,viewStory,getStoryByUserName} from '../controllers/storycontroller'
-import isAuth from "../middlewares/isAuth"
+import  {uploadStory,viewStory,getStoryByUserName} from '../controllers/storycontroller.js'
+import isAuth from "../middlewares/isAuth.js"
 import { upload } from "../middlewares/multer.js";
 
 const storyRouter=express.Router()
