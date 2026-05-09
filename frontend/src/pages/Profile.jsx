@@ -118,7 +118,7 @@ const Profile = () => {
       </div>
 
       <div className='w-full min-h-[100vh] flex justify-center '>
-          <div className='w-full max-w-[900px] flex flex-col items=center rounded-t-[30px] bg-white relative gap-[20px] pt-[30px]'>
+          <div className='w-full max-w-[900px] flex flex-col items-center rounded-t-[30px] bg-white relative gap-[20px] pt-[30px]'>
               <Navbar/> 
           </div>
       </div>

@@ -11,12 +11,14 @@ import Profile from "./pages/Profile";
 import { useEffect } from "react";
 import EditProfile from "./pages/EditProfile";
 import Upload from "./pages/Upload";
+import getAllPost from "./hooks/getAllPost";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8050";
 
  function App() {
    getCurrentUser()
     getSuggestedUser()
+    getAllPost()
 const {userData}=useSelector(state=>state.user)
 
 const [isInitializing, setIsInitializing] = useState(true);

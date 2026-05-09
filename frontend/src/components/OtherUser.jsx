@@ -10,7 +10,7 @@ const OtherUser = ({user}) => {
   return (
     <div className='w-full h-[80px] flex items-center justify-between border-b-2 border-gray-800'>
          <div className='flex items-center gap-[10px]'>
-              <div onClick={()=>navigate(`/profile/${user.userName}`)} className='w-[50px] h-[50px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
+               <div onClick={()=>navigate(`/profile/${user.userName}`)} className='w-[50px] h-[50px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
                    <img src={user.profileImage || dp} alt="" className='w-full object-cover' />
                </div>
                 <div>

@@ -53,6 +53,7 @@ const EditProfile = () => {
           }
          }catch(error){
                console.error("Edit Profile Error:", error);
+                console.log("FULL ERROR =>", error)
                 setLoading(false)
          }
     }
@@ -72,13 +73,25 @@ const EditProfile = () => {
         <div onClick={()=>imageInput.current.click()} className='text-blue-500 text-center text-[18px font-semibold cursor-pointer'>Change Your Profile Picture</div>
        
 
-        <input onChange={(e)=>setName(e.target.value)} value={name} type="text"  className='w-[90%] max-w-[600px] h-[60px] bg-[#0a1010] border-2 border-gray-700 rounded-2xl px-[20px] outline-none text-white font-semibold' placeholder='Enter your name'/>
-        <input onChange={(e)=>setUserName(e.target.value)} value={userName} type="text"  className='w-[90%] max-w-[600px] h-[60px] bg-[#0a1010] border-2 border-gray-700 rounded-2xl px-[20px] outline-none text-white font-semibold' placeholder='Enter your username '/>
-        <input onChange={(e)=>setBio(e.target.value)} value={bio}  type="text"  className='w-[90%] max-w-[600px] h-[60px] bg-[#0a1010] border-2 border-gray-700 rounded-2xl px-[20px] outline-none text-white font-semibold' placeholder='Enter your bio'/>
-        <input onChange={(e)=>setProfession(e.target.value)} value={profession}  type="text"  className='w-[90%] max-w-[600px] h-[60px] bg-[#0a1010] border-2 border-gray-700 rounded-2xl px-[20px] outline-none text-white font-semibold' placeholder='Enter your profession'/>
-        <input onChange={(e)=>setGender(e.target.value)} value={gender}  type="text"  className='w-[90%] max-w-[600px] h-[60px] bg-[#0a1010] border-2 border-gray-700 rounded-2xl px-[20px] outline-none text-white font-semibold' placeholder='Enter your gender'/>
+        <input onChange={(e)=>setName(e.target.value)} value={name} type="text" 
+          className='w-[90%] max-w-[600px] h-[60px] bg-[#0a1010] border-2 border-gray-700 rounded-2xl px-[20px] outline-none text-white font-semibold'
+          placeholder='Enter your name'/>
+        <input onChange={(e)=>setUserName(e.target.value)} value={userName} type="text"
+           className='w-[90%] max-w-[600px] h-[60px] bg-[#0a1010] border-2 border-gray-700 rounded-2xl px-[20px] outline-none text-white font-semibold'
+           placeholder='Enter your username '/>
+        <input onChange={(e)=>setBio(e.target.value)} value={bio}  type="text"  
+          className='w-[90%] max-w-[600px] h-[60px] bg-[#0a1010] border-2 border-gray-700 rounded-2xl px-[20px] outline-none text-white font-semibold' 
+          placeholder='Enter your bio'/>
+        <input onChange={(e)=>setProfession(e.target.value)} value={profession}  type="text"  
+          className='w-[90%] max-w-[600px] h-[60px] bg-[#0a1010] border-2 border-gray-700 rounded-2xl px-[20px] outline-none text-white font-semibold' 
+          placeholder='Enter your profession'/>
+        <input onChange={(e)=>setGender(e.target.value)} value={gender}  type="text"  
+          className='w-[90%] max-w-[600px] h-[60px] bg-[#0a1010] border-2 border-gray-700 rounded-2xl px-[20px] outline-none text-white font-semibold'
+          placeholder='Enter your gender'/>
         
-        <button onClick={handleEditProfile} className='px-[10px] w-[60%] max-w-[400px] py-[5px] h-[50px] bg-white cursor-pointer rounded-2xl'>{loading?<ClipLoader size={30} color='blue'/>:"Save Profile"}</button>
+        <button onClick={handleEditProfile} className='px-[10px] w-[60%] max-w-[400px] py-[5px] h-[50px] bg-white cursor-pointer rounded-2xl'>
+          {loading?<ClipLoader size={30} color='blue'/>:"Save Profile"}
+        </button>
     </div>
   )
 }

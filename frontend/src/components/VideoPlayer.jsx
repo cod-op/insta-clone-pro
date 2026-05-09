@@ -20,8 +20,8 @@ const handleClick=()=>{
 
   return (
     <div className='h-[100%] relative cursor-pointer max-w-full rounded-2xl overflow-hidden'>
-        <video onClick={handleClick} src={media} autoPlay loop muted ref={videoTag} 
-          className='h-[100%] cursor-pointer w-full object-cover rounded-2xl'></video>
+        <video onClick={handleClick} src={media} autoPlay loop  muted={mute} ref={videoTag} 
+           className="h-full w-full object-cover rounded-2xl cursor-pointer"></video>
         <div className='absolute bottom-[10px] right-[10px]' onClick={()=>setMute(prev=>!prev)}>
             {!mute?<FaVolumeUp className='w-[20px] h-[20px] text-white font-semibold'/>
             :<FaVolumeMute className='w-[20px] h-[20px] text-white font-semibold'/>}
