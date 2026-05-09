@@ -26,7 +26,7 @@ app.use(cookieParser())
 app.use("/api/auth",authRouter)
 app.use("/api/user",userRouter)
 app.use("/api/post",postRouter)
-app.use("/api/post",reelRouter)
+app.use("/api/reel",reelRouter)
 app.use("/api/story",storyRouter)
 
 app.listen(PORT, () => {

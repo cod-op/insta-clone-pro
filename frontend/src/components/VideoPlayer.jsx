@@ -1,0 +1,33 @@
+import React, { useRef, useState } from 'react'
+import {FaVolumeMute , FaVolumeUp } from "react-icons/fa";
+
+
+const VideoPlayer = ({media}) => {
+
+const videoTag=useRef()
+const [mute,setMute]=useState(false)
+const [isPlaying,setIsPlaying]=useState(true)
+
+const handleClick=()=>{
+    if(isPlaying){
+        videoTag.current.pause()
+        setIsPlaying(false)
+    }else{
+        videoTag.current.play()
+        setIsPlaying(true)
+    }
+}
+
+  return (
+    <div className='h-[100%] relative cursor-pointer max-w-full rounded-2xl overflow-hidden'>
+        <video onClick={handleClick} src={media} autoPlay loop muted ref={videoTag} 
+          className='h-[100%] cursor-pointer w-full object-cover rounded-2xl'></video>
+        <div className='absolute bottom-[10px] right-[10px]' onClick={()=>setMute(prev=>!prev)}>
+            {!mute?<FaVolumeUp className='w-[20px] h-[20px] text-white font-semibold'/>
+            :<FaVolumeMute className='w-[20px] h-[20px] text-white font-semibold'/>}
+        </div>
+    </div>
+  )
+}
+
+export default VideoPlayer
