@@ -39,7 +39,7 @@ const uploadPost=async (req,res)=>{
 const getAllPost = async (req, res) => {
   try {
     const posts = await Post.find({})
-      .populate("author", "name userName profileImage") 
+      .populate("author", "name userName profileImage").sort({createdAt:-1}) 
       .populate({
         path: "comments.author",
         select: "name userName profileImage"
@@ -178,8 +178,6 @@ const saved = async (req, res) => {
     });
 
     res.status(200).json({
-        success:true,
-        message:"post saved succesfully",
         user
     })
   } catch (error) {

@@ -12,12 +12,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { backendUrl } from '../App';
 import { setPostData } from '../redux/postSlice';
+import { setUserData } from '../redux/userSlice';
 
 const Post = ({post}) => {
     const navigate=useNavigate()
     const {userData}=useSelector(state=>state.user)
     const { postData } = useSelector(state => state.post);
-    const [showComment,setShowComment]=useState(true)
+    const [showComment,setShowComment]=useState(false)
     const [message,setMessage]=useState()
      const dispatch=useDispatch()
 
@@ -30,7 +31,7 @@ const Post = ({post}) => {
          const updatedPosts=postData.map(p=>p._id==post._id?updatedPost:p)
          dispatch(setPostData(updatedPosts))
       }catch(error){
-
+          console.log(error)
       }
     }
 
@@ -43,12 +44,22 @@ const Post = ({post}) => {
          
          const updatedPosts=postData.map(p=>p._id==post._id?updatedPost:p)
          dispatch(setPostData(updatedPosts))
+         setMessage("")
       }catch(error){
        console.log(error)
       }
     }
 
-
+ 
+    const handleSaved=async()=>{
+      try{
+         const result=await axios.get(`${backendUrl}/api/post/saved/${post._id}`,{withCredentials:true})
+         console.log("saveddata : ",result)
+         dispatch(setUserData(result.data.user))
+      }catch(error){
+         console.log(error)
+      }
+    }
 
 
 
@@ -86,19 +97,19 @@ const Post = ({post}) => {
            {/* left */}
             <div className='flex justify-center items-center gap-[10px]'>
                <div onClick={handleLike} className='flex justify-center items-center gap-[5px]'> 
-                  {!post.likes.includes(userData._id)&& <IoIosHeartEmpty className='w-[25px] h-[25px] cursor-pointer'/>}
-                  {post.likes.includes(userData._id)&& <FaHeart className='w-[25px] h-[25px] cursor-pointer text-red-600'/>}
-                  <span>{post.likes.length}</span>
+                  {!post?.likes?.includes(userData?._id)&& <IoIosHeartEmpty className='w-[25px] h-[25px] cursor-pointer'/>}
+                  {post?.likes?.includes(userData?._id)&& <FaHeart className='w-[25px] h-[25px] cursor-pointer text-red-600'/>}
+                  <span>{post?.likes?.length || 0}</span>
                </div>
                <div className='flex justify-center items-center gap-[10px]'>
-                 <MdOutlineComment className='w-[25px] h-[25px] cursor-pointer'/>
-                 <span>{post.comments.length}</span>
+                 <MdOutlineComment onClick={()=>setShowComment(prev=>!prev)} className='w-[25px] h-[25px] cursor-pointer'/>
+                 <span>{post?.comments?.length || 0}</span>
                </div>
             </div>
          {/* right */}
-            <div>
-                {!userData.saved.includes(post?._id)&& <FaRegBookmark className='w-[25px] h-[25px] cursor-pointer'/>}
-                {userData.saved.includes(post?._id)&& <GoBookmarkFill className='w-[25px] h-[25px] cursor-pointer'/>}
+            <div onClick={handleSaved}>
+                {!userData?.saved?.some(item=>(item._id || item) === post?._id)&& <FaRegBookmark className='w-[25px] h-[25px] cursor-pointer'/>}
+                {userData?.saved?.some(item=>(item._id || item) === post?._id)&& <GoBookmarkFill className='w-[25px] h-[25px] cursor-pointer'/>}
             </div>
 
          </div>
@@ -108,18 +119,19 @@ const Post = ({post}) => {
             <div>{post?.caption}</div>
          </div>}
 
-         {showComment  && <div className='w-full flex-col gap-[30px] pb-[20px]'>
+         {showComment  && 
+         <div className='w-full flex-col gap-[30px] pb-[20px]'>
               <div className='w-full h-[80px] flex items-center justify-between px-[20px] relative'>
                 <div  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
-                    <img src={post.author?.profileImage || dp} alt="" className='w-full h-full object-cover' />
+                    <img src={post?.author?.profileImage || dp} alt="" className='w-full h-full object-cover' />
                 </div>
                 <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='px-[10px] border-b-2 border-b-gray-500 w-[90%] outline-none h-[40px]'/>
                 <button onClick={handleComment} className='absolute right-[20px] cursor-pointer'><IoSend className='w-[25px] h-[25px]'/></button>
               </div>
 
               <div className='w-full max-h-[300px] overflow-auto'>
-                {post.comments.map((com,index)=>(
-                     <div key={index}> 
+                {post?.comments?.map((com,index)=>(
+                     <div key={index} className='w-full px-[20px] flex items-center gap-[20px] border-b-2 border-b-gray-200'> 
                         <div   className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
                             <img src={com.author?.profileImage || dp} alt="" className='w-full h-full object-cover' />
                          </div>

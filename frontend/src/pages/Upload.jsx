@@ -45,7 +45,7 @@ const uploadPost=async()=>{
     formData.append("mediaType",mediaType)
     formData.append("media",backendMedia)
     const result=await axios.post(`${backendUrl}/api/post/upload`,formData,{withCredentials:true})
-    dispatch(setPostData([...postData,result.data]))
+    dispatch(setPostData([result.data.populatedPost,...postData]))
     setLoading(false)
     navigate('/')
   }catch(error){
@@ -60,7 +60,7 @@ const uploadStory=async()=>{
     formData.append("mediaType",mediaType)
     formData.append("media",backendMedia)
     const result=await axios.post(`${backendUrl}/api/story/upload`,formData,{withCredentials:true})
-    dispatch(setStoryData([...storyData,result.data]))
+    dispatch(setStoryData([result.data.story,...storyData]))
     setLoading(false)
      navigate('/')
   }catch(error){
@@ -76,7 +76,7 @@ const uploadReel=async()=>{
     formData.append("caption",caption)
     formData.append("media",backendMedia)
     const result=await axios.post(`${backendUrl}/api/reel/upload`,formData,{withCredentials:true})
-    dispatch(setReelData([...reelData,result.data.populatedReel]))
+    dispatch(setReelData([result.data.populatedReel,...reelData]))
     setLoading(false)
      navigate('/')
   }catch(error){
@@ -131,7 +131,7 @@ const handleUpload=async()=>{
                {mediaType==="image" && 
                   <div className='w-[80%] max-w-[500px] h-[250px] flex flex-col items-center justify-center mt-[5vh]'>
                      <img src={frontendMedia} alt="" className='h-[60%] rounded-2xl' />
-                     {uploadType!="story" && <input type="text" placeholder='write caption...' className='w-full border-b-gray-400 border-b-2 outline-none px-[10px] py-[5px] text-white mt-[20px]'/>}
+                     {uploadType!="story" && <input  onChange={(e) => setCaption(e.target.value)} type="text" value={caption} placeholder='write caption...' className='w-full border-b-gray-400 border-b-2 outline-none px-[10px] py-[5px] text-white mt-[20px]'/>}
                   </div>
                }   
                {mediaType==="video" && 
