@@ -85,7 +85,10 @@ const like= async (req, res) => {
       await post.likes.push(req.userId);
     }
     await post.save()
-    await post.populate("author","name userName profileImage")
+    await post.populate([
+      { path: "author", select: "userName profileImage" },
+      { path: "comments.author", select: "userName profileImage" }
+    ]);
 
     res.status(200).json({
         success:true,
@@ -124,10 +127,10 @@ const comment = async (req, res) => {
     post.comments.push(newComment);
     await post.save();
 
-    await post.populate({
-        path: "comments.author",
-        select: "name userName profileImage"
-    });
+    await post.populate([
+      { path: "author", select: "userName profileImage" },
+      { path: "comments.author", select: "userName profileImage" }
+    ]);
 
     return res.status(201).json({
       success: true,  

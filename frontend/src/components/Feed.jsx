@@ -26,7 +26,7 @@ const Feed = () => {
         <div className='w-full min-h-[100vh] flex flex-col items-center gap-[20px] p-[10px] pt-[40px] bg-white rounded-t-[60px] relative pb-[120px]'>
             <Navbar/>
              {postData?.map((post,index)=>(
-              <Post postData={post} key={index}/>
+              <Post post={post} key={index}/>
              ))}
         </div>
 
