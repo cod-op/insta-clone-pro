@@ -77,7 +77,7 @@ const Post = ({post}) => {
             </div>
 
             {userData._id!=post.author._id  &&
-             <Follow targetUserId={post?.author?._id} tailwind={ 'flex justify-center items-center px-[10px] w-[80px] md:w-[100px] py-[5px] h-[30px] md:h-[40px] bg-black text-white rounded-2xl text-[14px] md:text-[16px]'}/> 
+             <Follow targetUserId={post?.author?._id} tailwind={ 'flex justify-center items-center px-[10px] w-[80px] md:w-[100px] py-[5px] h-[30px] md:h-[40px] bg-black text-white rounded-2xl text-[14px] md:text-[16px] cursor-pointer'}/> 
             }        
          </div>
 

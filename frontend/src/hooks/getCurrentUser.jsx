@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { backendUrl } from '../App'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
-import { setUserData } from '../redux/userSlice'
+import { setFollowing, setUserData } from '../redux/userSlice'
 
 const getCurrentUser = () => {
     const dispatch=useDispatch()
@@ -16,7 +16,9 @@ const getCurrentUser = () => {
         console.log("Backend Response:", result.data);
         if (result.data) {
              dispatch(setUserData(result.data.user));
+             dispatch(setFollowing(result.data.user.following || [])); 
          }
+         
     }catch(error){
        console.log(error);
     }

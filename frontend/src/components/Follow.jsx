@@ -4,17 +4,20 @@ import { backendUrl } from '../App';
 import axios from 'axios';
 import { toggleFollow } from '../redux/userSlice';
 
-const Follow = ({targetUserId,tailwind}) => {
+const Follow = ({targetUserId,tailwind,onFollowChange}) => {
 
     const {following}=useSelector(state=>state.user)
     const isFollowing = following?.includes?.(targetUserId) ?? false;
+    if(onFollowChange){
+        onFollowChange()
+    }
     const dispatch=useDispatch()
 
     const handleFollow=async()=>{
         try{
             const result=await axios.get(`${backendUrl}/api/user/follow/${targetUserId}`,{withCredentials:true})
             console.log("followdata : ",result)
-           dispatch(toggleFollow(targetUserId))
+            dispatch(toggleFollow(targetUserId))
         }catch(error){
             console.log(error);
         }

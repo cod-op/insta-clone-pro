@@ -71,15 +71,11 @@ const Profile = () => {
            <div>
                <div className='flex items-center justify-center gap-[20px]'>
                   <div className='flex relative '>
-                     <div className='w-[40px] h-[40px]  border-2 border-black rounded-full cursor-pointer overflow-hidden'>
-                     <img src={profileData?.profileImage || dp} alt="" className='w-full object-cover' />
-                     </div> 
-                      <div className='w-[40px] h-[40px] border-2 border-black rounded-full cursor-pointer overflow-hidden absolute right-[-8px]'>
-                     <img src={profileData?.profileImage || dp} alt="" className='w-full object-cover' />
-                     </div> 
-                      <div className='w-[40px] h-[40px] border-2 border-black rounded-full cursor-pointer overflow-hidden absolute right-[-15px]'>
-                     <img src={profileData?.profileImage || dp} alt="" className='w-full object-cover' />
-                     </div> 
+                    {profileData?.followers?.slice(0,3).map((user,index)=>(
+                      <div className={`w-[40px] h-[40px]  border-2 border-black rounded-full cursor-pointer overflow-hidden ${index>0?`absolute `:""}`} style={{ left: `${index * 15}px`,zIndex: 10 - index}}>
+                          <img src={user?.profileImage || dp} alt="" className='w-full object-cover' />
+                      </div>
+                    ))} 
                   </div>
 
                   <div className='text-white text-[22px] md:text-[30px] font-semibold'>{profileData?.followers?.length}</div>
@@ -90,15 +86,11 @@ const Profile = () => {
            <div >
                 <div className='flex items-center justify-center gap-[20px]'>
                   <div className='flex relative '>
-                     <div className='w-[40px] h-[40px]  border-2 border-black rounded-full cursor-pointer overflow-hidden'>
-                     <img src={profileData?.profileImage || dp} alt="" className='w-full object-cover' />
-                     </div> 
-                      <div className='w-[40px] h-[40px] border-2 border-black rounded-full cursor-pointer overflow-hidden absolute right-[-8px]'>
-                     <img src={profileData?.profileImage || dp} alt="" className='w-full object-cover' />
-                     </div> 
-                      <div className='w-[40px] h-[40px] border-2 border-black rounded-full cursor-pointer overflow-hidden absolute right-[-15px]'>
-                     <img src={profileData?.profileImage || dp} alt="" className='w-full object-cover' />
-                     </div>                      
+                     {profileData?.following?.slice(0,3).map((user,index)=>(
+                      <div className={`w-[40px] h-[40px]  border-2 border-black rounded-full cursor-pointer overflow-hidden ${index>0?`absolute `:""}`} style={{ left: `${index * 15}px`,zIndex: 10 - index}}>
+                          <img src={user?.profileImage || dp} alt="" className='w-full object-cover' />
+                      </div>
+                    ))}                      
                   </div>
                   <div className='text-white text-[22px] md:text-[30px] font-semibold'>{profileData?.following?.length}</div>
                 </div>
@@ -113,7 +105,7 @@ const Profile = () => {
 
           {profileData?._id!=userData._id &&
            <>
-           <Follow targetUserId={profileData?._id} tailwind={'px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'}/>
+           <Follow targetUserId={profileData?._id} onFollowChange={handleProfile} tailwind={'px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'}/>
            <button className='px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'>Message</button>
            </>}
       </div>
@@ -121,6 +113,8 @@ const Profile = () => {
       <div className='w-full min-h-[100vh] flex justify-center '>
           <div className='w-full max-w-[900px] flex flex-col items-center rounded-t-[30px] bg-white relative gap-[20px] pt-[30px]'>
               <Navbar/> 
+     {}
+
           </div>
       </div>
 

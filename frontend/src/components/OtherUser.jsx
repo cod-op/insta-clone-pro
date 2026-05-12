@@ -19,7 +19,7 @@ const OtherUser = ({user}) => {
                     <div className='text-[18px] text-gray-400 font-bold'>{user.name}</div>
                </div>
          </div>
-          <Follow tailwind={'px-[10px] w-[100px] py-[5px]  h-[40px] bg-white rounded-2xl'} targetUserId={user._id}/>
+          <Follow tailwind={'px-[10px] w-[100px] py-[5px]  h-[40px] bg-white rounded-2xl cursor-pointer'} targetUserId={user._id}/>
          
     </div>
   )
