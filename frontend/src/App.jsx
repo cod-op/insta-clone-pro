@@ -16,7 +16,7 @@ import getAllPost from "./hooks/getAllPost";
 export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8050";
 
  function App() {
-   getCurrentUser()
+    getCurrentUser()
     getSuggestedUser()
     getAllPost()
 const {userData}=useSelector(state=>state.user)

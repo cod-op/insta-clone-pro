@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { use, useState } from 'react'
 import dp from '../assets/dp.png'
 import { useNavigate } from 'react-router-dom'
 import VideoPlayer from './VideoPlayer'
@@ -13,6 +13,7 @@ import axios from 'axios';
 import { backendUrl } from '../App';
 import { setPostData } from '../redux/postSlice';
 import { setUserData } from '../redux/userSlice';
+import Follow from './Follow';
 
 const Post = ({post}) => {
     const navigate=useNavigate()
@@ -75,9 +76,9 @@ const Post = ({post}) => {
                 </div>
             </div>
 
-            <button className=  'flex justify-center items-center px-[10px] w-[80px] md:w-[100px] py-[5px] h-[30px] md:h-[40px] bg-black text-white rounded-2xl text-[14px] md:text-[16px]'>
-                Follow
-            </button> 
+            {userData._id!=post.author._id  &&
+             <Follow targetUserId={post?.author?._id} tailwind={ 'flex justify-center items-center px-[10px] w-[80px] md:w-[100px] py-[5px] h-[30px] md:h-[40px] bg-black text-white rounded-2xl text-[14px] md:text-[16px]'}/> 
+            }        
          </div>
 
          <div className="w-[90%] flex items-center justify-center"> 
@@ -123,7 +124,7 @@ const Post = ({post}) => {
          <div className='w-full flex-col gap-[30px] pb-[20px]'>
               <div className='w-full h-[80px] flex items-center justify-between px-[20px] relative'>
                 <div  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
-                    <img src={post?.author?.profileImage || dp} alt="" className='w-full h-full object-cover' />
+                    <img src={userData?.profileImage || dp} alt="" className='w-full h-full object-cover' />
                 </div>
                 <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='px-[10px] border-b-2 border-b-gray-500 w-[90%] outline-none h-[40px]'/>
                 <button onClick={handleComment} className='absolute right-[20px] cursor-pointer'><IoSend className='w-[25px] h-[25px]'/></button>
@@ -133,7 +134,7 @@ const Post = ({post}) => {
                 {post?.comments?.map((com,index)=>(
                      <div key={index} className='w-full px-[20px] flex items-center gap-[20px] border-b-2 border-b-gray-200'> 
                         <div   className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
-                            <img src={com.author?.profileImage || dp} alt="" className='w-full h-full object-cover' />
+                            <img src={com?.author?.profileImage || dp} alt="" className='w-full h-full object-cover' />
                          </div>
                           <div>{com.message}</div>
                      </div>

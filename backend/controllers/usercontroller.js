@@ -100,4 +100,46 @@ const getProfile=async (req,res)=>{
     }
 }
 
-export { getCurrentUser,suggestedUsers,editProfile,getProfile};
+
+const follow=async(req,res)=>{
+    try{
+      const currentUserId=req.userId
+      const targetUserId=req.params.targetUserId;
+
+      if(currentUserId===targetUserId){
+        return res.status(400).json({
+             message: "You cannot follow yourself."
+          });
+      }
+
+    const currentUser = await User.findById(currentUserId);
+    const targetUser = await User.findById(targetUserId);
+
+    const isFollowing=currentUser.following.includes(targetUserId)
+    if(isFollowing){
+        currentUser.following=currentUser.following.filter(id=>id.toString()!=targetUserId)
+        targetUser.followers=targetUser.followers.filter(id=>id.toString()!=currentUserId)
+        await currentUser.save();
+        await targetUser.save();
+        res.status(200).json({
+             message: "User unfollowed successfully."
+             });
+    }else{
+        currentUser.following.push(targetUserId);
+        targetUser.followers.push(currentUserId);
+        await currentUser.save();
+        await targetUser.save();
+        return res.status(200).json({
+             message: "User followed successfully." 
+            });
+    }
+
+    }catch(error){
+        console.error(error);
+        res.status(500).json({
+             message: "follow error" 
+            });
+    }
+}
+
+export { getCurrentUser,suggestedUsers,editProfile,getProfile,follow};

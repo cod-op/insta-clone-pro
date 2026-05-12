@@ -8,6 +8,7 @@ import { setProfileData, setUserData } from '../redux/userSlice'
 import { useEffect } from 'react'
 import { IoArrowBackSharp } from "react-icons/io5";
 import Navbar from '../components/Navbar'
+import Follow from '../components/Follow'
 
 const Profile = () => {
 
@@ -112,7 +113,7 @@ const Profile = () => {
 
           {profileData?._id!=userData._id &&
            <>
-           <button className='px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'>Follow</button>
+           <Follow targetUserId={profileData?._id} tailwind={'px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'}/>
            <button className='px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'>Message</button>
            </>}
       </div>
