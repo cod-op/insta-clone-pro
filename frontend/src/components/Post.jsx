@@ -56,7 +56,9 @@ const Post = ({post}) => {
       try{
          const result=await axios.get(`${backendUrl}/api/post/saved/${post._id}`,{withCredentials:true})
          console.log("saveddata : ",result)
-         dispatch(setUserData(result.data.user))
+         if (result.data.user) {
+          dispatch(setUserData(result.data.user));
+        }
       }catch(error){
          console.log(error)
       }

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React from 'react'
+import React, { useState } from 'react'
 import dp from '../assets/dp.png'
 import { backendUrl } from '../App'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -9,13 +9,16 @@ import { useEffect } from 'react'
 import { IoArrowBackSharp } from "react-icons/io5";
 import Navbar from '../components/Navbar'
 import Follow from '../components/Follow'
+import Post from '../components/Post'
 
 const Profile = () => {
 
     const {userName}=useParams()
     const dispatch=useDispatch()
     const {profileData,userData}=useSelector(state=>state.user)
+    const {postData}=useSelector(state=>state.post)
     const navigate=useNavigate()
+    const [postType,setPostType]=useState("posts")
 
    const handleProfile=async()=>{
     try{
@@ -111,9 +114,29 @@ const Profile = () => {
       </div>
 
       <div className='w-full min-h-[100vh] flex justify-center '>
-          <div className='w-full max-w-[900px] flex flex-col items-center rounded-t-[30px] bg-white relative gap-[20px] pt-[30px]'>
+          <div className='w-full max-w-[900px] flex flex-col items-center rounded-t-[30px] bg-white relative gap-[20px] pt-[30px] pb-[100px]'>
+
+        <div className='w-[90%] max-w-[600px] h-[80px] bg-white rounded-full flex justify-center items-center gap-[10px]'>
+             <div onClick={()=>setPostType("posts")} className={` ${postType==="posts"?"bg-black shadow-2xl hover:shadow-black text-white":"" }
+              w-[28%] h-[80%] flex justify-center items-center text-[19px] font-semibold 
+             hover:bg-black rounded-full hover:text-white cursor-pointer shadow-2xl hover:shadow-black`}>Posts</div>
+             {profileData?._id === userData?._id && (<div onClick={()=>setPostType("saved")} className={` ${postType==="saved"?"bg-black shadow-2xl hover:shadow-black text-white":"" }
+              w-[28%] h-[80%] flex justify-center items-center text-[19px] font-semibold 
+             hover:bg-black rounded-full hover:text-white cursor-pointer shadow-2xl hover:shadow-black`}>saved</div>
+             )}
+       </div>
               <Navbar/> 
-     {}
+       
+          {postData.map((post, index) => {
+           if (postType === "posts") {
+              return post.author?._id === profileData?._id ? <Post key={post._id} post={post} /> : null;
+           } else {
+          const isSaved = userData?.saved?.some(savedItem => 
+           (savedItem._id || savedItem) === post._id);
+    
+          return isSaved ? <Post key={post._id} post={post} /> : null;
+            }
+         })}
 
           </div>
       </div>
