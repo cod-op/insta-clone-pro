@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState ,useEffect} from 'react'
 import {FaVolumeMute , FaVolumeUp } from "react-icons/fa";
 
 
@@ -17,6 +17,30 @@ const handleClick=()=>{
         setIsPlaying(true)
     }
 }
+
+useEffect(()=>{
+      const observer=new IntersectionObserver((entries)=>{
+        const entry=entries[0]
+        const video=videoTag.current
+        if(entry.isIntersecting){
+          video.play()
+          setIsPlaying(true)
+        }
+        else {
+            videoTag.current.pause()
+            setIsPlaying(false)
+          }
+      },{threshold:0.6})
+
+      if(videoTag.current){
+        observer.observe(videoTag.current)
+      }
+      return ()=>{
+       if(videoTag.current){
+        observer.unobserve(videoTag.current)
+      }
+      }
+    },[])
 
   return (
     <div className='h-[100%] relative cursor-pointer max-w-full rounded-2xl overflow-hidden'>

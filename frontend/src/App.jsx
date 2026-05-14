@@ -12,6 +12,8 @@ import { useEffect } from "react";
 import EditProfile from "./pages/EditProfile";
 import Upload from "./pages/Upload";
 import getAllPost from "./hooks/getAllPost";
+import Reels from "./pages/Reels";
+import getAllReels from "./hooks/getAllReels";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8050";
 
@@ -19,6 +21,7 @@ export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:
     getCurrentUser()
     getSuggestedUser()
     getAllPost()
+    getAllReels()
 const {userData}=useSelector(state=>state.user)
 
 const [isInitializing, setIsInitializing] = useState(true);
@@ -47,6 +50,7 @@ if (isInitializing && !userData) {
       <Route path="/profile/:userName" element={userData?<Profile/>:<Navigate to={"/signin"}/>} />
       <Route path="/editprofile" element={userData?<EditProfile/>:<Navigate to={"/signin"}/>} />
       <Route path="/upload" element={userData?<Upload/>:<Navigate to={"/signin"}/>} />
+      <Route path="/reels" element={userData?<Reels/>:<Navigate to={"/signin"}/>} />
     </Routes>
   );
 }

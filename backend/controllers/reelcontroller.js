@@ -90,8 +90,8 @@ const like= async (req, res) => {
 
     res.status(200).json({
         success:true,
-        message:"post liked succesfully",
-        post
+        message:"reel liked succesfully",
+        reel
     })
   } catch (error) {
     console.error("Like Reel Error:", error);

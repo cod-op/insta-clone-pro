@@ -121,7 +121,7 @@ const handleUpload=async()=>{
          { !frontendMedia && 
            <div onClick={()=>mediaInput.current.click()} className='w-[80%] max-w-[500px] h-[250px] bg-[#0e1316] border-gray-800 border-2 flex flex-col items-center justify-center
               gap-[8px] mt-[15vh] rounded-2xl cursor-pointer hover:bg-[#353a3d]'>
-              <input type="file" hidden ref={mediaInput} onChange={handleMedia}/>
+              <input type="file" accept={uploadType==="reel"?"video/*":""}  hidden ref={mediaInput} onChange={handleMedia}/>
               <div onClick={()=>navigate('/upload')} ><FaRegSquarePlus  className='text-white w-[30px] h-[30px] cursor-pointer'/></div>
               <div className='text-white text-[19px] font-semi-bold'> Upload {uploadType}</div>
           </div>
