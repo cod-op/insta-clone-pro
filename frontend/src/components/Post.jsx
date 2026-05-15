@@ -21,7 +21,7 @@ const Post = ({post}) => {
     const { postData } = useSelector(state => state.post);
     const [showComment,setShowComment]=useState(false)
     const [message,setMessage]=useState()
-     const dispatch=useDispatch()
+    const dispatch=useDispatch()
 
     const handleLike=async()=>{
       try{

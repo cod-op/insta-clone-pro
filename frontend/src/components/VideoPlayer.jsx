@@ -5,7 +5,7 @@ import {FaVolumeMute , FaVolumeUp } from "react-icons/fa";
 const VideoPlayer = ({media}) => {
 
 const videoTag=useRef()
-const [mute,setMute]=useState(true)
+const [mute,setMute]=useState(false)
 const [isPlaying,setIsPlaying]=useState(true)
 
 const handleClick=()=>{

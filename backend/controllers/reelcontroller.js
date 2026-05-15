@@ -123,7 +123,11 @@ const comment = async (req, res) => {
 
     reel.comments.push(newComment);
     await reel.save();
-
+    
+    await reel.populate({
+      path: "author",
+        select: "name userName profileImage"
+    })
     await reel.populate({
         path: "comments.author",
         select: "name userName profileImage"

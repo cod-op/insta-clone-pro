@@ -9,7 +9,7 @@ const Reels = () => {
   const {reelData}=useSelector(state=>state.reel)
   return (
     <div className='w-screen h-screen bg-black overflow-hidden flex justify-center items-center  '>
-            <div className='w-full h-[80px]  flex items-center gap-[20px] px-[20px] fixed top-[20px] left-[20px] ' ><IoArrowBackSharp onClick={()=>navigate(`/`)} className='text-white w-[25px] h-[25px] cursor-pointer '/>
+            <div className='w-full h-[80px]  flex items-center gap-[20px] px-[20px] fixed top-[20px] left-[20px]' ><IoArrowBackSharp onClick={()=>navigate(`/`)} className='text-white w-[25px] h-[25px] cursor-pointer '/>
                 <h1 className='text-white text-[20px] font-semibold'>Reels</h1>
             </div>
            
