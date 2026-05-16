@@ -104,4 +104,25 @@ const getStoryByUserName=async (req,res)=>{
 
 
 
-export {uploadStory,viewStory,getStoryByUserName}
+const getAllStories=async(req,res)=>{
+  try{
+   const currentUser=await User.findById(req.userId)
+   const followingIds= await currentUser.following
+
+   //find all author that are in following list
+   const stories=await Story.find({
+      author:{$in:followingIds}
+   })
+   .populate("viewers")
+   .populate("author", "userName profileImage")
+   .sort({ createdAt: -1 })
+   return res.status(200).json({
+      success: true,
+      stories
+    })
+  }catch(error){
+    console.error("Error in getAllStories:", error);
+  }
+}
+
+export {uploadStory,viewStory,getStoryByUserName,getAllStories}

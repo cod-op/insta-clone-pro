@@ -61,7 +61,7 @@ const EditProfile = () => {
 
   return (
     <div className='w-full min-h-[100vh] bg-black flex items-center flex-col gap-[20px] '>
-       <div className='w-full h-[80px]  flex items-center gap-[20px] px-[20px]' ><IoArrowBackSharp onClick={()=>navigate(`/profile/${userData.userName}`)} className='text-white w-[25px] h-[25px] cursor-pointer '/>
+        <div className='w-full h-[80px]  flex items-center gap-[20px] px-[20px]' ><IoArrowBackSharp onClick={()=>navigate(`/profile/${userData.userName}`)} className='text-white w-[25px] h-[25px] cursor-pointer '/>
           <h1 className='text-white text-[20px] font-semibold'>Edit Profile</h1>
         </div>
 

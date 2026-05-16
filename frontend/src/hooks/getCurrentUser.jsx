@@ -7,6 +7,7 @@ import { setFollowing, setUserData } from '../redux/userSlice'
 const getCurrentUser = () => {
     const dispatch=useDispatch()
     const { userData } = useSelector(state => state.user);
+    const {storyData}=useSelector(state=>state.story)
   useEffect(()=>{
    const fetchUser=async()=>{
     try{
@@ -24,7 +25,7 @@ const getCurrentUser = () => {
     }
    }
    fetchUser()
- },[dispatch])
+ },[dispatch,storyData])
  
 }
 
