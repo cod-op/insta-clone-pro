@@ -36,7 +36,7 @@ const uploadStory=async(req,res)=>{
       .populate("viewers","name userName profileImage")
 
       return res.status(200).json({
-        story
+        story:populatedStory
       })
    }catch(error){
          console.error("Story Upload Error:", error);
@@ -49,7 +49,7 @@ const uploadStory=async(req,res)=>{
 
 const viewStory=async(req,res)=>{
      try{
-        const storId=req.params.storyId
+        const storyId=req.params.storyId
         const story =await Story.findById(storyId)
         if(!story){
             return res.status(404).json({

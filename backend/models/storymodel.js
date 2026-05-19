@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const reelSchema=new mongoose.Schema({
+const storySchema=new mongoose.Schema({
     author:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
@@ -17,8 +17,7 @@ const reelSchema=new mongoose.Schema({
     },
     viewers:[
         {type:mongoose.Schema.Types.ObjectId,
-         ref:"User",
-         required:true
+         ref:"User"
         }
     ],
     createdAt:{
@@ -28,5 +27,5 @@ const reelSchema=new mongoose.Schema({
     }
 })
 
-const Story=mongoose.model("Story",reelSchema)        
+const Story=mongoose.model("Story",storySchema)        
 export default Story;

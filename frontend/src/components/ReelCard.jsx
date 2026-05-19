@@ -128,7 +128,7 @@ const ReelCard = ({reel}) => {
          <div className='relative w-full h-[100vh] flex-shrink-0'>
             <video onDoubleClick={handleLikeOnDoubleClick} ref={videoRef} autoPlay  loop src={reel?.media} muted={mute} className="w-full max-h-[100vh]" onClick={handleClick} onTimeUpdate={handleTimeUpdate}/>
 
-         <div className='absolute top-[20px] right-[20px] cursor-pointer' onClick={()=>setMute(prev=>!prev)}>
+         <div className='absolute top-[30px] right-[20px] cursor-pointer z-200' onClick={()=>setMute(prev=>!prev)}>
             {!mute?<FaVolumeUp className='w-[20px] h-[20px] text-white font-semibold'/>
                :<FaVolumeMute className='w-[20px] h-[20px] text-white font-semibold'/>}
          </div>

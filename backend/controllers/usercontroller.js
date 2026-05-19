@@ -4,7 +4,7 @@ import User from "../models/usermodel.js";
 const getCurrentUser=async(req,res)=>{
     try{
         const userId=req.userId;
-        const user=await User.findById(userId).populate("posts reels posts.author posts.comments");
+        const user=await User.findById(userId).populate("posts reels story posts.author posts.comments");
         if(!user){
             return res.status(400).json({
                 message:"User not found !"
