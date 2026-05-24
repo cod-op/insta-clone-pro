@@ -55,7 +55,7 @@ const Post = ({post}) => {
     const handleSaved=async()=>{
       try{
          const result=await axios.get(`${backendUrl}/api/post/saved/${post._id}`,{withCredentials:true})
-         console.log("saveddata : ",result)
+         console.log("savedata : ",result)
          if (result.data.user) {
           dispatch(setUserData(result.data.user));
         }
@@ -70,7 +70,7 @@ const Post = ({post}) => {
     <div className='w-[90%]  flex flex-col gap-[10px] bg-white items-center  shadow-2xl shadow-[#00000058] rounded-2xl pb-[20px]'>
          <div className='w-full h-[80px] flex justify-between items-center px-[10px] '>
             <div className='flex justify-center items-center gap-[10px] md:gap-[20px]'>
-                <div onClick={()=>navigate(`/profile/${post.author?.userName}`)}  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
+                <div onClick={()=>navigate(`/profile/${post?.author?.userName}`)}  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
                     <img src={post.author?.profileImage || dp} alt="" className='w-full h-full object-cover' />
                 </div>
                 <div className='w-[150px] font-semibold truncate'>

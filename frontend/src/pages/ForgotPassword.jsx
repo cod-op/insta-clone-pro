@@ -73,7 +73,8 @@ const handleStep3=async()=>{
     <div  className='w-full h-screen bg-gradient-to-b from-black to-gray-900  flex flex-col justify-center items-center'>
       {step==1 && <div className='w-[90%] max-w-[500px] h-[500px] bg-white rounded-2xl  flex justify-center items-center flex-col border-[#1a1f23]'>
             <h2 className='text-[30px] font-semibold'>Forgot Password</h2>
-            <div onClick={()=>setInputClicked({...inputClicked,email:true})} className="relative flex items-center justify-start w-[90%] h-[50px] mt-[30px] rounded-2xl border-2 border-black">
+            <div onClick={()=>setInputClicked({...inputClicked,email:true})} 
+                className="relative flex items-center justify-start w-[90%] h-[50px] mt-[30px] rounded-2xl border-2 border-black">
                  <label htmlFor="email" className={`text-gray-700 absolute  left-[20px] p-[5px] bg-white text-[15px] ${inputClicked.email?"top-[-15px]":""}`}> Enter Your email</label>
                  <input onChange={(e)=>setEmail(e.target.value)} value={email}  type="email" id='email' className="w-[100%] h-[100%] rounded-2xl px-[20px] outline-none border-0" required/>
              </div>

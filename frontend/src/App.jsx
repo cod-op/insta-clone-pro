@@ -4,7 +4,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import Home from "./pages/Home";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import getCurrentUser from "./hooks/getCurrentUser";
 import getSuggestedUser from "./hooks/getSuggestedUser";
 import Profile from "./pages/Profile";
@@ -16,6 +16,10 @@ import Reels from "./pages/Reels";
 import getAllReels from "./hooks/getAllReels";
 import Story from "./pages/Story";
 import getAllStories from "./hooks/getAllStories";
+import Messages from "./pages/Messages";
+import MessageArea from "./pages/MessageArea";
+import {io} from "socket.io-client"
+import { setOnlineUsers, setSocket } from "./redux/socketSlice";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8050";
 
@@ -26,6 +30,8 @@ export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:
     getAllReels()
     getAllStories()
 const {userData}=useSelector(state=>state.user)
+const {socket}=useSelector(state=>state.socket)
+const dispatch=useDispatch()
 
 const [isInitializing, setIsInitializing] = useState(true);
 useEffect(() => {
@@ -36,6 +42,28 @@ const timer = setTimeout(() => {
     return () => clearTimeout(timer);
   }, []);
 
+
+  useEffect(()=>{
+    if(userData){
+      const socketIo=io(backendUrl,{
+        query:{
+          userId:userData._id
+        }
+      })
+      dispatch(setSocket(socketIo))
+      socketIo.on('getOnlineUsers',(users)=>{
+         dispatch(setOnlineUsers(users))
+      })
+      return ()=>socketIo.close()
+    }else{
+      if(socket){
+        socket.close()
+        dispatch(setSocket(null))
+      }
+    }
+  },[])
+
+  
 if (isInitializing && !userData) {
     return (
       <div className="h-screen bg-black flex items-center justify-center text-white">
@@ -55,6 +83,8 @@ if (isInitializing && !userData) {
       <Route path="/upload" element={userData?<Upload/>:<Navigate to={"/signin"}/>} />
       <Route path="/reels" element={userData?<Reels/>:<Navigate to={"/signin"}/>} />
       <Route path="/story/:userName" element={userData?<Story/>:<Navigate to={"/signin"}/>} />
+      <Route path="/messages" element={userData?<Messages/>:<Navigate to={"/signin"}/>} />
+      <Route path="/messagearea" element={userData?<MessageArea/>:<Navigate to={"/signin"}/>} />
     </Routes>
   );
 }

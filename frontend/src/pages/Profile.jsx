@@ -10,6 +10,7 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import Navbar from '../components/Navbar'
 import Follow from '../components/Follow'
 import Post from '../components/Post'
+import { setSelectedUser } from '../redux/messageSlice'
 
 const Profile = () => {
 
@@ -107,10 +108,14 @@ const Profile = () => {
           && <button onClick={()=>navigate('/editprofile')} className='px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'>Edit Profile</button> }
 
           {profileData?._id!=userData._id &&
-           <>
-           <Follow targetUserId={profileData?._id} onFollowChange={handleProfile} tailwind={'px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'}/>
-           <button className='px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'>Message</button>
-           </>}
+        <>
+              <Follow targetUserId={profileData?._id} onFollowChange={handleProfile} tailwind={'px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'}/>
+             <button 
+                 onClick={()=>{dispatch(setSelectedUser(profileData)),navigate('/messagearea')}}
+                 className='px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'>
+                 Message
+             </button>
+        </>}
       </div>
 
       <div className='w-full min-h-[100vh] flex justify-center '>

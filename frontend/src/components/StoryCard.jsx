@@ -36,7 +36,8 @@ const StoryCard = () => {
     <div className="w-full md:w-[500px] mx-auto h-[100vh] border-x-2 border-gray-800 pt-[10px] relative flex flex-col justify-center">
          <div className="flex items-center gap-[10px] absolute top-[20px] px-[10px] z-[500]"> 
                 <IoArrowBackSharp onClick={()=>navigate(`/`)} className='text-white w-[25px] h-[25px] cursor-pointer '/>      
-            <div onClick={() => navigate(`/profile/${storyData?.author?.userName}`)} className="w-[30px] h-[30px] md:w-[50px] md:h-[50px] border-2 border-black rounded-full cursor-pointer overflow-hidden ml-[10px]">
+            <div onClick={() => navigate(`/profile/${storyData?.author?.userName}`)} 
+               className="w-[30px] h-[30px] md:w-[50px] md:h-[50px] border-2 border-black rounded-full cursor-pointer overflow-hidden ml-[10px]">
                <img src={storyData?.author?.profileImage || dp} alt="" className="w-full h-full object-cover "/>
             </div>
             <div className="w-[100px] font-semibold truncate text-white ">
