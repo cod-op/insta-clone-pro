@@ -9,7 +9,8 @@ import SenderMesage from '../components/SenderMesage';
 import ReceiverMessage from '../components/ReceiverMessage';
 import axios from 'axios';
 import { backendUrl } from '../App';
-import { setMessages } from '../redux/messageSlice';
+import { setMessages ,setSelectedUser} from '../redux/messageSlice';
+import EmojiPicker from "../components/EmojiPicker";
 
 const MessageArea = () => {
     const {selectedUser,messages}=useSelector(state=>state.message)
@@ -47,7 +48,9 @@ const MessageArea = () => {
    }
 
 
-   const getAllMessages=async(req,res)=>{
+
+   const getAllMessages=async()=>{
+       if (!selectedUser?._id) return;
       try{
         const result=await axios.get(`${backendUrl}/api/message/getall/${selectedUser._id}`,{withCredentials:true})
         console.log("getallmesssasge",result.data)
@@ -57,9 +60,12 @@ const MessageArea = () => {
       }
    }
 
-   useEffect(()=>{
-   getAllMessages()
-   },[])
+
+  useEffect(() => {
+   if (selectedUser?._id) {
+      getAllMessages();
+   }
+}, [selectedUser]);
 
   return (
     <div className='w-full h-[100vh] bg-black relative'>
@@ -78,7 +84,7 @@ const MessageArea = () => {
 
         <div className='w-full h-[80%] pt-[100px] pb-[80px] px-[40px] flex flex-col gap-[50px] overflow-auto bg-black'>
            {messages && messages.map((mess,index)=>(
-              mess.sender===userData?._id ? <SenderMesage message={mess}/>: < ReceiverMessage message={mess}/>
+              mess.sender===userData?._id ? <SenderMesage message={mess} key={mess._id}/>: < ReceiverMessage message={mess} key={mess._id}/>
            ))}
         </div>
 
@@ -89,6 +95,7 @@ const MessageArea = () => {
                     <img src={frontendImage} alt="" className='h-full object-cover'/>
                   </div>
                }
+               <EmojiPicker setValue={setInput} tailwind={'w-[25px] h-[25px] text-white cursor-pointer'}/>
                <input onChange={(e)=>setInput(e.target.value)} value={input} type="text" placeholder='message' className='w-full h-full px-[20px] text-[18px] text-white outline-0'/>
                <input onChange={handleImage}  type="file" accept='image/*' hidden ref={imageInput} />
                <div onClick={()=>imageInput.current.click()}><FaImage className='w-[28px] h-[28px] text-white cursor-pointer'/></div>

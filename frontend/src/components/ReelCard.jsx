@@ -12,6 +12,7 @@ import { MdOutlineComment } from "react-icons/md";
 import { IoSend } from "react-icons/io5";
 import axios from 'axios';
 import { backendUrl } from '../App';
+import EmojiPicker from './EmojiPicker';
 
 const ReelCard = ({reel}) => {
     const {userData}=useSelector(state=>state.user)
@@ -22,7 +23,7 @@ const ReelCard = ({reel}) => {
     const [progress,setProgress]=useState(0)
     const [showHeart,setShowHeart]=useState(false)
     const [showComment,setShowComment]=useState(false)
-    const [message,setMessage]=useState()
+    const [message,setMessage]=useState("")
     const navigate=useNavigate()
     const dispatch=useDispatch()
     const commentRef=useRef()
@@ -190,12 +191,14 @@ const ReelCard = ({reel}) => {
                    ))}
               </div>
 
-              <div className='w-full bottom-0 fixed h-[80px] flex items-center justify-between px-[20px]'>
+              <div className='w-full bottom-0 fixed h-[80px] flex items-center gap-[10px] px-[20px]'>
                  <div  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
                     <img src={userData?.profileImage || dp} alt="" className='w-full h-full object-cover text-white' />
                  </div>
-                 <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='px-[10px] border-b-2 border-b-gray-500 w-[90%] outline-none h-[40px] text-white'/>
-                  <button onClick={handleComment} className='absolute right-[20px] cursor-pointer'><IoSend className='w-[25px] h-[25px] text-white'/></button>
+                 
+                 <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='flex-1 px-[10px] border-b-2 border-b-gray-500 outline-none h-[40px] text-white bg-transparent'/>
+                    <EmojiPicker setValue={setMessage} tailwind={"w-[25px] h-[25px] text-white cursor-pointer"} />
+                  <button onClick={handleComment} className=' cursor-pointer'><IoSend className='w-[25px] h-[25px] text-white'/></button>
               </div>
          </div>
 

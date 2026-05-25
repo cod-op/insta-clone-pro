@@ -14,13 +14,14 @@ import { backendUrl } from '../App';
 import { setPostData } from '../redux/postSlice';
 import { setUserData } from '../redux/userSlice';
 import Follow from './Follow';
+import EmojiPicker from './EmojiPicker';
 
 const Post = ({post}) => {
     const navigate=useNavigate()
     const {userData}=useSelector(state=>state.user)
     const { postData } = useSelector(state => state.post);
     const [showComment,setShowComment]=useState(false)
-    const [message,setMessage]=useState()
+    const [message,setMessage]=useState("")
     const dispatch=useDispatch()
 
     const handleLike=async()=>{
@@ -123,13 +124,14 @@ const Post = ({post}) => {
          </div>}
 
          {showComment  && 
-         <div className='w-full flex-col gap-[30px] pb-[20px]'>
-              <div className='w-full h-[80px] flex items-center justify-between px-[20px] relative'>
+         <div className='w-full flex-col gap-[30px] pb-[20px] '>
+              <div className='w-full h-[80px] flex items-center px-[20px] gap-5 relative'>
                 <div  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
                     <img src={userData?.profileImage || dp} alt="" className='w-full h-full object-cover' />
                 </div>
-                <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='px-[10px] border-b-2 border-b-gray-500 w-[90%] outline-none h-[40px]'/>
-                <button onClick={handleComment} className='absolute right-[20px] cursor-pointer'><IoSend className='w-[25px] h-[25px]'/></button>
+                <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='flex-1 px-[10px] border-b-2 border-b-gray-500  outline-none h-[40px]'/>
+                  <EmojiPicker setValue={setMessage} tailwind={'w-[25px] h-[25px] text-black cursor-pointer'} />
+                <button onClick={handleComment} className='cursor-pointer'><IoSend className='w-[25px] h-[25px]'/></button>
               </div>
 
               <div className='w-full max-h-[300px] overflow-auto'>

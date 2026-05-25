@@ -5,7 +5,7 @@ import {sendMessage,getAllMessages,getPreviousUserChats} from '../controllers/me
 
 const messageRouter=express.Router()
 
-messageRouter.post("/send/:senderId",isAuth,upload.single("image"),sendMessage)
+messageRouter.post("/send/:receiverId",isAuth,upload.single("image"),sendMessage)
 messageRouter.get("/getall/:receiverId",isAuth,getAllMessages)
 messageRouter.get("/previouschats",isAuth,getPreviousUserChats)
 

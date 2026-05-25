@@ -44,9 +44,8 @@ const getAllMessages=async(req,res)=>{
     try{
         const senderId=req.userId;
         const receiverId=req.params.receiverId;
-        console.log("Sender ID:", senderId);
-        console.log("Receiver ID (from params):", receiverId);
-        const conversation=await Conversation.findOne({
+
+       const conversation=await Conversation.findOne({
          participants:{$all:[senderId,receiverId]}
       }).populate("messages")
     
