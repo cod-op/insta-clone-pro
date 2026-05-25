@@ -20,6 +20,9 @@ import Messages from "./pages/Messages";
 import MessageArea from "./pages/MessageArea";
 import {io} from "socket.io-client"
 import { setOnlineUsers, setSocket } from "./redux/socketSlice";
+import getfollowingList from "./hooks/getFollowingList";
+import getPreviousChatUsers from "./hooks/getPreviousChatUsers";
+
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8050";
 
@@ -29,6 +32,8 @@ export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:
     getAllPost()
     getAllReels()
     getAllStories()
+    getfollowingList()
+    getPreviousChatUsers()
 const {userData}=useSelector(state=>state.user)
 const {socket}=useSelector(state=>state.socket)
 const dispatch=useDispatch()
@@ -44,11 +49,12 @@ const timer = setTimeout(() => {
 
 
   useEffect(()=>{
+    
     if(userData){
       const socketIo=io(backendUrl,{
         query:{
           userId:userData._id
-        }
+        },
       })
       dispatch(setSocket(socketIo))
       socketIo.on('getOnlineUsers',(users)=>{
@@ -61,7 +67,7 @@ const timer = setTimeout(() => {
         dispatch(setSocket(null))
       }
     }
-  },[])
+  },[userData])
 
   
 if (isInitializing && !userData) {

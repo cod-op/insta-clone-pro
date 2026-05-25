@@ -3,21 +3,21 @@ import { backendUrl } from '../App'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setFollowing, setUserData} from '../redux/userSlice'
+import { setPreviousChatUsers } from '../redux/messageSlice'
 
 
-const getCurrentUser = () => {
+const getPreviousChatUsers = () => {
     const dispatch=useDispatch()
-    const { userData } = useSelector(state => state.user);
-    const {storyData}=useSelector(state=>state.story)
-  useEffect(()=>{
+    const {messages}=useSelector(state=>state.message)
+   useEffect(()=>{
    const fetchUser=async()=>{
     try{
 
-     const result=await axios.get(`${backendUrl}/api/user/current`,
+     const result=await axios.get(`${backendUrl}/api/message/previouschats`,
         {withCredentials:true})
-      //   console.log("Backend Response:", result.data);
+        console.log("previoususer data",result.data)
         if (result.data) {
-             dispatch(setUserData(result.data.user)); 
+             dispatch(setPreviousChatUsers(result.data)); 
          }
          
     }catch(error){
@@ -25,8 +25,8 @@ const getCurrentUser = () => {
     }
    }
    fetchUser()
- },[dispatch,storyData])
+ },[dispatch,messages])
  
 }
 
-export default getCurrentUser
+export default getPreviousChatUsers

@@ -4,7 +4,7 @@ import User from "../models/usermodel.js";
 const getCurrentUser=async(req,res)=>{
     try{
         const userId=req.userId;
-        const user=await User.findById(userId).populate("posts reels story posts.author posts.comments");
+        const user=await User.findById(userId).populate("posts reels story posts.author posts.comments following");
         if(!user){
             return res.status(400).json({
                 message:"User not found !"
@@ -142,4 +142,14 @@ const follow=async(req,res)=>{
     }
 }
 
-export { getCurrentUser,suggestedUsers,editProfile,getProfile,follow};
+const followingList=async(req,res)=>{
+    try{
+        const result=await User.findById(req.userId)
+        
+        return res.status(200).json(result?.following)
+    }catch(error){
+
+    }
+}
+
+export { getCurrentUser,suggestedUsers,editProfile,getProfile,follow,followingList};

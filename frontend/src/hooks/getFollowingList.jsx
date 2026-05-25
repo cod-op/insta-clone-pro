@@ -2,10 +2,9 @@ import React, { useEffect } from 'react'
 import { backendUrl } from '../App'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
-import { setFollowing, setUserData} from '../redux/userSlice'
+import { setFollowing, setUserData } from '../redux/userSlice'
 
-
-const getCurrentUser = () => {
+const getfollowingList = () => {
     const dispatch=useDispatch()
     const { userData } = useSelector(state => state.user);
     const {storyData}=useSelector(state=>state.story)
@@ -13,11 +12,11 @@ const getCurrentUser = () => {
    const fetchUser=async()=>{
     try{
 
-     const result=await axios.get(`${backendUrl}/api/user/current`,
+     const result=await axios.get(`${backendUrl}/api/user/followinglist`,
         {withCredentials:true})
       //   console.log("Backend Response:", result.data);
         if (result.data) {
-             dispatch(setUserData(result.data.user)); 
+             dispatch(setFollowing(result.data));
          }
          
     }catch(error){
@@ -29,4 +28,4 @@ const getCurrentUser = () => {
  
 }
 
-export default getCurrentUser
+export default  getfollowingList
