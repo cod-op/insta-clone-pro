@@ -13,6 +13,8 @@ const StoryCard = () => {
     const [progress,setProgress]=useState(0)
     const[showViewers,setShowViewers]=useState(false)
 
+    const isOwner = storyData?.author?.userName === userData?.userName;
+
     useEffect(()=>{
            if (!storyData) return
             setProgress(0)
@@ -52,7 +54,7 @@ const StoryCard = () => {
 
         {!showViewers && 
         <>
-            <div onClick={()=>setShowViewers(true)} className="w-full h-full flex items-center justify-center"> 
+            <div onClick={() => isOwner && setShowViewers(true)} className={`w-full h-full flex items-center justify-center ${isOwner ? 'cursor-pointer' : ''}`}> 
              {storyData.mediaType==="image" && 
                 <div className='w-full h-[100vh]  flex items-center justify-center'>
                   <img src={storyData.media} alt="" className='h-[300px] max-w-full object-cover' />
@@ -65,7 +67,7 @@ const StoryCard = () => {
                }        
             </div>
 
-         {storyData?.author?.userName===userData?.userName && 
+         {isOwner  && 
             <div onClick={()=>setShowViewers(true)}  className="w-full flex h-[70px] p-2 left-0 absolute bottom-0 text-white cursor-pointer">
                 <div className="text-white flex items-center gap-[5px] font-semibold "><IoIosEye className="w-[30px] h-[30px] text-gray-400 "/>{storyData?.viewers?.length}</div>
                <div >
@@ -83,7 +85,7 @@ const StoryCard = () => {
             </div>}
         </>}
 
-        {showViewers  && <>
+        {showViewers && isOwner && <>
               <div onClick={()=>setShowViewers(false)} className="w-full h-[30%] flex items-center justify-center mt-[80px] mb-[10px] cursor-pointer overflow-hidden"> 
              {storyData.mediaType==="image" && 
                 <div className='h-full  flex items-center justify-center'>

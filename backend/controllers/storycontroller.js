@@ -122,6 +122,10 @@ const getAllStories=async(req,res)=>{
     })
   }catch(error){
     console.error("Error in getAllStories:", error);
+    return res.status(500).json({
+       success: false,
+        message: "get all story error" 
+      });
   }
 }
 
