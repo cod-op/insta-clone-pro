@@ -2,6 +2,7 @@ import uploadOncloudinary from "../config/cloudinary.js";
 import User from "../models/usermodel.js";
 import Notification from "../models/notificationmodel.js";
 import {io, getSocketId } from "../socket.js";
+import nodemon from "nodemon";
 
 
 const getCurrentUser=async(req,res)=>{
@@ -199,6 +200,8 @@ const getAllNotifications=async(req,res)=>{
       const notifications = await Notification.find({ receiver: req.userId,})
       .populate("sender", "userName name profileImage")
       .populate("receiver", "userName name profileImage")
+      .populate("post") 
+      .populate("reel")
       .sort({ createdAt: -1 });
 
        return res.status(200).json(notifications);
@@ -213,19 +216,28 @@ const getAllNotifications=async(req,res)=>{
 
 const markAsRead=async(req,res)=>{
     try{
-   const { notificationId } = req.params.notificationId;
-   const notification = await Notification.findById(notificationId)
-   if (!notification) {
-      return res.status(404).json({
-        success: false,
-        message: "Notification not found"
+   const {notificationId } = req.body
+  
+   if (!notificationId) {
+      return res.status(400).json({
+        message: "notificationId required"
       });
     }
-    notification.isRead = true
-    await notification.save()
+    
+    if(Array.isArray(notificationId)){
+        await Notification.updateMany(
+            {_id:{$in:notificationId},receiver:req.userId},
+            {$set: {isRead:true}}
+        )
+    }else{
+        await Notification.findOneAndUpdate(
+            {_id:notificationId,receiver:req.userId},
+            {$set: {isRead:true}}
+        )
+    }
 
      return res.status(200).json({
-      message: "Notification marked as read"
+      message: "Marked as read"
     })
     
 }catch(error){

@@ -14,7 +14,7 @@ const getAllNotifications = () => {
 
      const result=await axios.get(`${backendUrl}/api/user/getallnotifications`,
         {withCredentials:true})
-      console.log("notification",result.data)
+
         if (result.data) {
              dispatch(setNotificationData(result.data));
          }

@@ -14,7 +14,7 @@ userRouter.get("/followinglist",isAuth,followingList);
 userRouter.get("/follow/:targetUserId",isAuth,follow);
 userRouter.get("/search",isAuth,search);
 userRouter.get("/getallnotifications",isAuth,getAllNotifications);
-userRouter.get("/markasread/:notificationId",isAuth,markAsRead);
+userRouter.post("/markasread",isAuth,markAsRead);
 userRouter.post("/editprofile",isAuth,upload.single("profileImage"),editProfile);
       
 export default userRouter;

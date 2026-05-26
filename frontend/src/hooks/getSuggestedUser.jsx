@@ -12,7 +12,7 @@ const getSuggestedUser = () => {
     try{
      const result=await axios.get(`${backendUrl}/api/user/suggested`,
         {withCredentials:true})
-      //   console.log("Backend Response suggested user:", result.data);
+
        if (result.data) {
              dispatch(setSuggestedUsers(result.data.users));
          }

@@ -15,7 +15,7 @@ const getCurrentUser = () => {
 
      const result=await axios.get(`${backendUrl}/api/user/current`,
         {withCredentials:true})
-      //   console.log("Backend Response:", result.data);
+
         if (result.data) {
              dispatch(setUserData(result.data.user)); 
          }

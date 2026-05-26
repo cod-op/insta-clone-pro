@@ -24,6 +24,8 @@ import getfollowingList from "./hooks/getFollowingList";
 import getPreviousChatUsers from "./hooks/getPreviousChatUsers";
 import Search from "./pages/Search";
 import getAllNotifications from "./hooks/getAllNotifications";
+import Notifications from "./pages/Notifications";
+import { setNotificationData } from "./redux/userSlice";
 
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8050";
@@ -72,6 +74,12 @@ const timer = setTimeout(() => {
     }
   },[userData])
 
+  // useEffect(()=>{
+  //   socket.on("newNotification",(noti)=>{
+  //     dispatch(setNotificationData(noti)) 
+  //   })
+  // },[socket])
+
   
 if (isInitializing && !userData) {
     return (
@@ -93,6 +101,7 @@ if (isInitializing && !userData) {
       <Route path="/reels" element={userData?<Reels/>:<Navigate to={"/signin"}/>} />
       <Route path="/story/:userName" element={userData?<Story/>:<Navigate to={"/signin"}/>} />
       <Route path="/messages" element={userData?<Messages/>:<Navigate to={"/signin"}/>} />
+      <Route path="/notifications" element={userData?<Notifications/>:<Navigate to={"/signin"}/>} />
       <Route path="/messagearea" element={userData?<MessageArea/>:<Navigate to={"/signin"}/>} />
       <Route path="/search" element={userData?<Search/>:<Navigate to={"/signin"}/>} />
     </Routes>

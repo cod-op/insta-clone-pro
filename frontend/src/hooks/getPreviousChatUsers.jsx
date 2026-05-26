@@ -15,7 +15,7 @@ const getPreviousChatUsers = () => {
 
      const result=await axios.get(`${backendUrl}/api/message/previouschats`,
         {withCredentials:true})
-        console.log("previoususer data",result.data)
+
         if (result.data) {
              dispatch(setPreviousChatUsers(result.data)); 
          }

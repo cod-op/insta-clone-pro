@@ -14,7 +14,7 @@ const getfollowingList = () => {
 
      const result=await axios.get(`${backendUrl}/api/user/followinglist`,
         {withCredentials:true})
-      //   console.log("Backend Response:", result.data);
+
         if (result.data) {
              dispatch(setFollowing(result.data));
          }

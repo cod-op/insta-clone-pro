@@ -14,7 +14,7 @@ const getAllStories = () => {
       
      const result=await axios.get(`${backendUrl}/api/story/getall`,
         {withCredentials:true})
-        console.log("All story Response:", result.data);
+
         if (result.data) {
              dispatch(setStoryList(result.data.stories));
          }

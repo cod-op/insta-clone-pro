@@ -15,7 +15,7 @@ const getAllPost = () => {
 
      const result=await axios.get(`${backendUrl}/api/post/getall`,
         {withCredentials:true})
-      //   console.log("Post data:", result.data);
+
         if (result.data.posts) {
              dispatch(setPostData(result.data.posts));
          }

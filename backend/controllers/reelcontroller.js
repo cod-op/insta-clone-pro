@@ -1,6 +1,7 @@
 import Reel from '../models/reelmodel.js'
 import User from '../models/usermodel.js';
 import uploadOncloudinary from "../config/cloudinary.js";
+import Notification from "../models/notificationmodel.js";
 import { getSocketId, io } from "../socket.js";
 
 const uploadReel=async (req,res)=>{
@@ -85,6 +86,8 @@ const like= async (req, res) => {
     } else {
       // Agar liked nahi hai 
       reel.likes.push(req.userId);
+      let populateNotification;
+
       if(reel.author._id!=req.userId){
               const notificaton=await Notification.create({
                  sender: req.userId,
@@ -93,7 +96,7 @@ const like= async (req, res) => {
                  reel: reel._id,
                  message:"liked your reel"
               })
-              const populateNotification=await Notification.findById(notificaton._id)
+               populateNotification=await Notification.findById(notificaton._id)
               .populate("sender receiver reel")
               }
               const receiverSocketId=getSocketId(reel.author._id)
@@ -143,6 +146,7 @@ const comment = async (req, res) => {
     };
 
     reel.comments.push(newComment);
+    let populateNotification;
     if(reel.author._id!=req.userId){
             const notificaton=await Notification.create({
                sender: req.userId,
@@ -151,7 +155,7 @@ const comment = async (req, res) => {
                 reel: reel._id,
                 message:"commented on your reel"
             })
-            const populateNotification=await Notification.findById(notificaton._id)
+             populateNotification=await Notification.findById(notificaton._id)
             .populate("sender receiver reel")
             }
             const receiverSocketId=getSocketId(reel.author._id)

@@ -24,10 +24,10 @@ const Feed = () => {
             <img src={logo} alt="" className='w-[150px]' />
            <div className='felx items-center gap-[10px]'>
             <div className='relative'>
-                        <IoMdHeartEmpty  className='text-white w-[25px] h-[25px]'/>
+                        <IoMdHeartEmpty  className='text-white w-[25px] h-[25px] cursor-pointer' onClick={()=>navigate('/notifications')}/>
                         {(notificationData?.length>0 && notificationData.some((noti)=>
                           noti.isRead===false)) &&
-                          <div className='w-[10px] h-[10px] bg-blue-600 rounded-full absolute top-0 right-0'>
+                          <div className='w-[10px] h-[10px] bg-[#ED4956] rounded-full absolute top-0 right-0'>
             
                         </div>
                         }
