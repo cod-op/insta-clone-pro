@@ -23,6 +23,19 @@ const MessageArea = () => {
     const [backendImage,setBackendImage]=useState(null)
     const dispatch=useDispatch()
 
+    useEffect(() => {
+        if (!selectedUser && localStorage.getItem("selectedUser")) {
+            const user = JSON.parse(localStorage.getItem("selectedUser"));
+            dispatch(setSelectedUser(user));
+        }
+    }, [selectedUser, dispatch]);
+
+    useEffect(() => {
+        if (selectedUser) {
+            localStorage.setItem("selectedUser", JSON.stringify(selectedUser));
+        }
+    }, [selectedUser]);
+
     const handleImage=(e)=>{
       const file=e.target.files[0]
       setBackendImage(file)
@@ -31,6 +44,7 @@ const MessageArea = () => {
 
     const handleSendMessage = async(e)=>{
        e.preventDefault() 
+       if (!input.trim() && !backendImage) return;
        try{
          const formData=new FormData()
          formData.append("message",input)
@@ -66,14 +80,29 @@ const MessageArea = () => {
    if (selectedUser?._id) {
       getAllMessages();
    }
-}, [selectedUser]);
+}, [selectedUser?._id]);
 
 useEffect(()=>{
-  socket.on("newMessage",(mess)=>{
-   dispatch(setMessages([...messages,mess]))
-  })
-  socket.off("newMessage");
-},[socket, messages])
+  if (!socket) return;
+
+  const handleNewMessage = (mess) => {
+    if (mess.sender === selectedUser?._id || mess.sender === userData?._id) {
+          dispatch(setMessages([...messages, mess]))
+        }
+      }
+ socket.on("newMessage", handleNewMessage);
+  return () => {
+            socket.off("newMessage", handleNewMessage); 
+        };
+    }, [socket, messages, dispatch, selectedUser?._id, userData?._id])
+
+    if (!selectedUser) {
+        return (
+            <div className='w-full h-[100vh] bg-black flex items-center justify-center text-white text-[18px]'>
+                Loading Chat...
+            </div>
+        )
+    }
 
   return (
     <div className='w-full h-[100vh] bg-black relative'>

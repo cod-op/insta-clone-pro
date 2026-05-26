@@ -32,7 +32,14 @@ const sendMessage=async(req,res)=>{
     }
 
    const receiverSocketId=getSocketId(receiverId)
-   io.to(receiverId).emit("newMessage",newMessage)
+   if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessage", newMessage)
+    }
+
+   const senderSocketId = getSocketId(senderId)
+    if (senderSocketId) {
+        io.to(senderSocketId).emit("newMessage", newMessage)
+    }
 
     return res.status(200).json(newMessage)
     }catch(error){

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
+import dp from '../assets/dp.png'
 
 const ReceiverMessage = ({message}) => {
   const {userData}=useSelector(state=>state.user)
@@ -14,7 +15,7 @@ useEffect(() => {
     <div ref={scroll} className='w-fit max-w-[60%] bg-[#1a1f1f] rounded-t-2xl rounded-br-2xl
        rounded-bl-0 px-[10px] py-[10px] relative  left-0 flex  gap-[10px] '>
        <div className='w-[30px] h-[30px] rounded-full cursor-pointer overflow-hidden absolute left-[-25px] bottom-[-40px] '>
-          <img src={selectedUser?.profileImage} alt="" />
+          <img src={selectedUser?.profileImage || dp} alt="" />
        </div>
          {message.image && 
            <img src={message.image} alt="" className='h-[200px] object-cover rounded-2xl'/>

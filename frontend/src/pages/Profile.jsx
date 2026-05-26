@@ -107,7 +107,7 @@ const Profile = () => {
           {profileData?._id==userData._id
           && <button onClick={()=>navigate('/editprofile')} className='px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'>Edit Profile</button> }
 
-          {profileData?._id!=userData._id &&
+          {profileData?._id!=userData?._id &&
         <>
               <Follow targetUserId={profileData?._id} onFollowChange={handleProfile} tailwind={'px-[10px] min-w-[150px] py-[5px] h-[40px] bg-white cursor-pointer rounded-2xl'}/>
              <button 

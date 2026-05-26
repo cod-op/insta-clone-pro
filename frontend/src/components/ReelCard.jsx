@@ -206,16 +206,25 @@ const ReelCard = ({reel}) => {
                    ))}
               </div>
 
-              <div className='w-full absolute bottom-0  h-[80px] flex items-center gap-[10px] px-[20px]'>
-                 <div  className='w-[40px] h-[40px] flex-shrink-0 md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
-                    <img src={userData?.profileImage || dp} alt="" className='w-full h-full object-cover text-white' />
-                 </div>
-                 <div className="flex-1 flex items-center border-b border-gray-500 min-w-0">
-                 <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='flex-1 px-[10px] border-b-2 border-b-gray-500 outline-none h-[40px] text-white bg-transparent'/>
-                    <EmojiPicker setValue={setMessage} tailwind={"w-[25px] h-[25px] text-white cursor-pointer"} />
-                  </div>
-                  <button onClick={handleComment} className='flex-shrink-0 cursor-pointer'><IoSend className='w-[22px] h-[22px] text-white'/></button>
-              </div>
+              <div className='w-full absolute bottom-0 left-0 h-[80px] bg-[#0e1718] flex items-center justify-between gap-[10px] px-[20px] z-[110]'>
+  
+    <div className='w-[40px] h-[40px] md:w-[50px] md:h-[50px] border-2 border-gray-600 rounded-full cursor-pointer overflow-hidden flex-shrink-0'>
+        <img src={userData?.profileImage || dp} alt="" className='w-full h-full object-cover text-white' />
+    </div>
+    
+  
+    <div className="flex-1 flex items-center border-b border-gray-500 h-[45px] min-w-0 px-[5px]">
+        <input onChange={(e) => setMessage(e.target.value)} value={message}  type="text" placeholder='write comment...' 
+            className='flex-1 bg-transparent text-white text-[14px] outline-none border-none h-full pr-2 min-w-0' onKeyDown={(e) => e.key === 'Enter' && handleComment()}/>
+        <div className='flex-shrink-0 flex items-center justify-center'>
+            <EmojiPicker setValue={setMessage} tailwind={"w-[24px] h-[24px] text-white cursor-pointer ml-2"} />
+        </div>
+    </div>
+
+    <button onClick={handleComment} className='w-[40px] h-[40px] flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-90 transition-transform'>
+       <IoSend className='w-[22px] h-[22px] text-white'/>
+    </button>
+</div>
          </div>
 
     </div>

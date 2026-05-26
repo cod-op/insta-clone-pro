@@ -81,7 +81,7 @@ const Post = ({post}) => {
   },[socket,postData,dispatch])
 
   return (
-    <div className='w-[90%]  flex flex-col gap-[10px] bg-white items-center  shadow-2xl shadow-[#00000058] rounded-2xl pb-[20px]'>
+    <div className='w-full  flex flex-col gap-[10px] bg-white items-center  shadow-2xl shadow-[#00000058] rounded-2xl pb-[20px]'>
          <div className='w-full h-[80px] flex justify-between items-center px-[10px] '>
             <div className='flex justify-center items-center gap-[10px] md:gap-[20px]'>
                 <div onClick={()=>navigate(`/profile/${post?.author?.userName}`)}  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
@@ -143,11 +143,15 @@ const Post = ({post}) => {
                     <img src={userData?.profileImage || dp} alt="" className='w-full h-full object-cover' />
                 </div>
                 <div className="flex-1 flex items-center border-b-2 border-gray-500 h-[40px]">
-                   <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='flex-1 outline-none h-full bg-transparent'/>
-                   <EmojiPicker setValue={setMessage} tailwind={'w-[25px] h-[25px] text-black cursor-pointer'} />
-                   <button onClick={handleComment} className='cursor-pointer ml-2'><IoSend className='w-[25px] h-[25px]'/></button>
+                   <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='flex-1 outline-none h-full bg-transparent px-2'/>
+                   <div className="flex items-center gap-1 flex-shrink-0">
+                      <EmojiPicker setValue={setMessage} tailwind={'w-[25px] h-[25px] text-black cursor-pointer'} />
+                      <button onClick={handleComment} className='cursor-pointer'>
+                       <IoSend className='w-[25px] h-[25px]' />
+                      </button>
+                    </div>
                 </div>
-              </div>
+               </div>
 
               <div className='w-full max-h-[300px] overflow-auto'>
                 {post?.comments?.map((com,index)=>(

@@ -17,6 +17,7 @@ const Messages = () => {
 
   const handleClick=(user)=>{
    dispatch(setSelectedUser(user))
+   localStorage.setItem("selectedUser", JSON.stringify(user))
    navigate('/messagearea')
   }
   

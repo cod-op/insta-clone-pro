@@ -28,8 +28,9 @@ import Notifications from "./pages/Notifications";
 import { setNotificationData } from "./redux/userSlice";
 
 
-export const backendUrl ="https://insta-pro-backend.onrender.com";
-
+export const backendUrl = window.location.hostname === "localhost" 
+  ? "http://localhost:8050" 
+  : "https://insta-pro-backend.onrender.com";
  function App() {
     getCurrentUser()
     getSuggestedUser()
