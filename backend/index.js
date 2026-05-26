@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 8050
 
 
 app.use(cors({
-    origin: "https://insta-pro-backend.onrender.com",
+    origin: "https://insta-clone-pro-app.vercel.app",
     credentials: true
 }))
 app.use(express.json()) 
