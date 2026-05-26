@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 8050
 
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://insta-pro-backend.onrender.com",
     credentials: true
 }))
 app.use(express.json()) 
