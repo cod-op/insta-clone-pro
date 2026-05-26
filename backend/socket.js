@@ -6,7 +6,7 @@ const server = http.createServer(app)
 
 const io=new Server(server,{
     cors:{
-        origin:"https://insta-pro-backend.onrender.com",
+        origin:"https://insta-clone-pro-app.vercel.app",
         methods:["GET","POST"]
     }
 })
