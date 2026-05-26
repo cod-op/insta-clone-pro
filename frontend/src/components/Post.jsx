@@ -142,10 +142,10 @@ const Post = ({post}) => {
                 <div  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full shrink-0 cursor-pointer overflow-hidden'>
                     <img src={userData?.profileImage || dp} alt="" className='w-full h-full object-cover' />
                 </div>
-                <div className="flex-1 flex items-center border-b-2 border-gray-500 h-[40px]">
-                   <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='flex-1 outline-none h-full bg-transparent px-2'/>
-                   <div className="flex items-center gap-1 flex-shrink-0">
-                      <EmojiPicker setValue={setMessage} tailwind={'w-[25px] h-[25px] text-black cursor-pointer'} />
+                <div className="flex-1 flex items-center border-b-2 border-gray-500 h-[40px] min-w-0 pr-1 gap-2">
+                   <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='flex-1 outline-none h-full bg-transparent px-1 text-[15px] min-w-0'/>
+                   <div className="flex items-center gap-[10px] flex-shrink-0">
+                      <EmojiPicker setValue={setMessage} tailwind={'w-[25px] h-[25px] text-gray-600 cursor-pointer hover:text-black'} />
                       <button onClick={handleComment} className='cursor-pointer'>
                        <IoSend className='w-[25px] h-[25px]' />
                       </button>
