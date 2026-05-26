@@ -28,7 +28,7 @@ import Notifications from "./pages/Notifications";
 import { setNotificationData } from "./redux/userSlice";
 
 
-export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8050";
+export const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://insta-pro-backend.onrender.com";
 
  function App() {
     getCurrentUser()
