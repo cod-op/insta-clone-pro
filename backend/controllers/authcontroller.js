@@ -89,8 +89,8 @@ const signIn=async(req,res)=>{
 
    res.cookie("token",token,{
     httpOnly:true,
-    secure:false,
-    sameSite:"Strict",
+    secure:true,
+    sameSite:"none",
     maxAge:10*365*24*60*60*1000
    } )
 
@@ -110,8 +110,8 @@ const signOut=async(req,res)=>{
     try{
      res.clearCookie("token",{
      httpOnly:true,
-     secure:false,
-     sameSite:"Strict",
+      secure:true,
+      sameSite:"none",
      maxAge:10*360*24*60*60*1000
     }) 
     return res.status(200).json({
