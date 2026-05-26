@@ -3,7 +3,7 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import dp from '../assets/dp.png'
 import {useDispatch, useSelector} from 'react-redux'
-import OnlineUser from '../components/onlineUser';
+import OnlineUser from '../components/OnlineUser';
 import { setSelectedUser } from '../redux/messageSlice';
 
 const Messages = () => {
