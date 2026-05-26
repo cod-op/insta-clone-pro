@@ -1,5 +1,8 @@
 import uploadOncloudinary from "../config/cloudinary.js";
 import User from "../models/usermodel.js";
+import Notification from "../models/notificationmodel.js";
+import {io, getSocketId } from "../socket.js";
+
 
 const getCurrentUser=async(req,res)=>{
     try{
@@ -127,6 +130,21 @@ const follow=async(req,res)=>{
     }else{
         currentUser.following.push(targetUserId);
         targetUser.followers.push(currentUserId);
+        let populateNotification;
+        if(currentUser._id!=targetUser._id){
+                const notificaton=await Notification.create({
+                   sender: currentUser._id,
+                   receiver: targetUser._id,
+                    type:"follow",
+                    message:"started following you"
+                })
+                 populateNotification=await Notification.findById(notificaton._id)
+                .populate("sender receiver")
+                }
+                const receiverSocketId=getSocketId(targetUser._id)
+                if(receiverSocketId){
+                  io.to(receiverSocketId).emit("newNotification",populateNotification)
+                }
         await currentUser.save();
         await targetUser.save();
         return res.status(200).json({
@@ -152,4 +170,71 @@ const followingList=async(req,res)=>{
     }
 }
 
-export { getCurrentUser,suggestedUsers,editProfile,getProfile,follow,followingList};
+const search=async(req,res)=>{
+    try{
+      const keyWord =req.query.keyword;
+      if(!keyWord){
+        res.status(400).json({
+            message:"keyword is required"
+        })
+      }
+
+      const users=await User.find({
+        $or:[
+            {userName:{$regex:keyWord,$options:"i"}},
+            {name:{$regex:keyWord,$options:"i"}}
+        ]
+      }).select("-password")
+      return res.status(200).json(users)
+    }catch(error){
+        console.log(error)
+        return res.status(500).json({
+            message:`search error ${error}`
+        })
+    }
+}
+
+const getAllNotifications=async(req,res)=>{
+    try{
+      const notifications = await Notification.find({ receiver: req.userId,})
+      .populate("sender", "userName name profileImage")
+      .populate("receiver", "userName name profileImage")
+      .sort({ createdAt: -1 });
+
+       return res.status(200).json(notifications);
+    }catch(error){
+        console.log(error)
+        return res.status(500).json({
+       success: false,
+       message: `Get notifications error: ${error.message}`
+    })
+}
+}
+
+const markAsRead=async(req,res)=>{
+    try{
+   const { notificationId } = req.params.notificationId;
+   const notification = await Notification.findById(notificationId)
+   if (!notification) {
+      return res.status(404).json({
+        success: false,
+        message: "Notification not found"
+      });
+    }
+    notification.isRead = true
+    await notification.save()
+
+     return res.status(200).json({
+      message: "Notification marked as read"
+    })
+    
+}catch(error){
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: `Mark as read error: ${error.message}`,
+    })
+}
+}
+
+export { getCurrentUser,suggestedUsers,editProfile,getProfile,follow,followingList,search,getAllNotifications,markAsRead};

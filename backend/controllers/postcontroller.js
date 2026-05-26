@@ -1,6 +1,8 @@
 import uploadOncloudinary from "../config/cloudinary.js";
+import Notification from "../models/notificationmodel.js";
 import Post from '../models/postmodel.js'
 import User from "../models/usermodel.js";
+import { getSocketId, io } from "../socket.js";
 
 const uploadPost=async (req,res)=>{
      try{
@@ -39,7 +41,7 @@ const uploadPost=async (req,res)=>{
 const getAllPost = async (req, res) => {
   try {
     const posts = await Post.find({})
-      .populate("author", "name userName profileImage").sort({createdAt:-1}) 
+      .populate("author", "name userName profileImage")
       .populate({
         path: "comments.author",
         select: "name userName profileImage"
@@ -82,13 +84,36 @@ const like= async (req, res) => {
 
     } else {
       // Agar liked nahi hai 
-      await post.likes.push(req.userId);
+        post.likes.push(req.userId);
+
+        let populateNotification;
+
+        if(post.author._id!=req.userId){
+        const notificaton=await Notification.create({
+           sender: req.userId,
+           receiver: post.author._id,
+            type:"like",
+            post: post._id,
+            message:"liked your post"
+        })
+          populateNotification=await Notification.findById(notificaton._id)
+        .populate("sender receiver post")
+        }
+        const receiverSocketId=getSocketId(post.author._id)
+        if(receiverSocketId){
+          io.to(receiverSocketId).emit("newNotification",populateNotification)
+        }
     }
+
     await post.save()
     await post.populate([
       { path: "author", select: "userName profileImage" },
       { path: "comments.author", select: "userName profileImage" }
     ]);
+    io.emit("likedPost",{
+      postId:post._id,
+      likes:post.likes
+    })
 
     res.status(200).json({
         success:true,
@@ -125,12 +150,33 @@ const comment = async (req, res) => {
     };
 
     post.comments.push(newComment);
+    if(post.author._id!=req.userId){
+        const notificaton=await Notification.create({
+           sender: req.userId,
+           receiver: post.author._id,
+            type:"comment",
+            post: post._id,
+            message:"commented on your post"
+        })
+        const populateNotification=await Notification.findById(notificaton._id)
+        .populate("sender receiver post")
+        }
+        const receiverSocketId=getSocketId(post.author._id)
+        if(receiverSocketId){
+          io.to(receiverSocketId).emit("newNotification",populateNotification)
+        }
+
     await post.save();
 
     await post.populate([
       { path: "author", select: "userName profileImage" },
       { path: "comments.author", select: "userName profileImage" }
     ]);
+
+    io.emit("commentedPost",{
+      postId:post._id,
+      comments:post.comments
+    })
 
     return res.status(201).json({
       success: true,  

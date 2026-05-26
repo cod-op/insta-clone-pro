@@ -14,7 +14,7 @@ const Feed = () => {
 
   const {postData}=useSelector(state=>state.post)
   
-  const {userData}=useSelector(state=>state.user)
+  const {userData,notificationData}=useSelector(state=>state.user)
   const {storyList}=useSelector(state=>state.story)
  const navigate=useNavigate()
 
@@ -23,7 +23,15 @@ const Feed = () => {
         <div className='w-full h-[100px] flex items-center justify-between p-[20px] lg:hidden'>
             <img src={logo} alt="" className='w-[150px]' />
            <div className='felx items-center gap-[10px]'>
-            <IoMdHeartEmpty  className='text-white w-[25px] h-[25px]'/>
+            <div className='relative'>
+                        <IoMdHeartEmpty  className='text-white w-[25px] h-[25px]'/>
+                        {(notificationData?.length>0 && notificationData.some((noti)=>
+                          noti.isRead===false)) &&
+                          <div className='w-[10px] h-[10px] bg-blue-600 rounded-full absolute top-0 right-0'>
+            
+                        </div>
+                        }
+                      </div>
             <LuMessageSquareMore onClick={()=>navigate('/messages')} className='text-white w-[25px] h-[25px]'/>
            </div>
         </div> 

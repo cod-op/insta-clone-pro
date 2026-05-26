@@ -21,7 +21,7 @@ const EmojiPickerComponent = ({ setValue,tailwind }) => {
       {showEmoji && (
         <div className="absolute bottom-[60px] right-0 z-[999]">
           <div className="flex justify-end mb-1">
-            <button type="button"onClick={() => setShowEmoji(false)}className="text-red-500 font-bold text-lg">
+            <button type="button"onClick={() => setShowEmoji(false)}className="text-red-500 font-bold text-lg cursor-pointe">
               X
             </button>
           </div>

@@ -12,11 +12,12 @@ import { MdOutlineComment } from "react-icons/md";
 import { IoSend } from "react-icons/io5";
 import axios from 'axios';
 import { backendUrl } from '../App';
-import EmojiPicker from './EmojiPicker';
+import EmojiPicker from './EmojiPickerComponent';
 
 const ReelCard = ({reel}) => {
     const {userData}=useSelector(state=>state.user)
     const { reelData } = useSelector(state => state.reel);
+    const { socket } = useSelector(state => state.socket)
     const videoRef=useRef()
     const [isPlaying,setIsPlaying]=useState(true)
     const [mute,setMute]=useState(false)
@@ -117,6 +118,20 @@ const ReelCard = ({reel}) => {
       }
       }
     },[])
+
+    useEffect(()=>{
+       socket?.on("likedReel",(updatedData)=>{
+        const updatedReels=reelData.map(p=>p._id===updatedData.reelId?{...p,likes:updatedData.likes}:p)
+        dispatch(setReelData(updatedReels))
+       })
+       socket?.on("commentedReel",(updatedData)=>{
+        const updatedReels=reelData.map(p=>p._id===updatedData.reelId?{...p,comments:updatedData.comments}:p)
+        dispatch(setReelData(updatedReels))
+       })
+       return ()=>{socket?.off("likedReel")
+          socket?.off("commentedReel")
+       }
+      },[socket,reelData,dispatch])
 
     
   return (

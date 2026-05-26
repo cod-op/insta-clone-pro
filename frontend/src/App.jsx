@@ -22,6 +22,8 @@ import {io} from "socket.io-client"
 import { setOnlineUsers, setSocket } from "./redux/socketSlice";
 import getfollowingList from "./hooks/getFollowingList";
 import getPreviousChatUsers from "./hooks/getPreviousChatUsers";
+import Search from "./pages/Search";
+import getAllNotifications from "./hooks/getAllNotifications";
 
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8050";
@@ -34,6 +36,7 @@ export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:
     getAllStories()
     getfollowingList()
     getPreviousChatUsers()
+    getAllNotifications()
 const {userData}=useSelector(state=>state.user)
 const {socket}=useSelector(state=>state.socket)
 const dispatch=useDispatch()
@@ -91,6 +94,7 @@ if (isInitializing && !userData) {
       <Route path="/story/:userName" element={userData?<Story/>:<Navigate to={"/signin"}/>} />
       <Route path="/messages" element={userData?<Messages/>:<Navigate to={"/signin"}/>} />
       <Route path="/messagearea" element={userData?<MessageArea/>:<Navigate to={"/signin"}/>} />
+      <Route path="/search" element={userData?<Search/>:<Navigate to={"/signin"}/>} />
     </Routes>
   );
 }

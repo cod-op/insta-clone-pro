@@ -1,6 +1,7 @@
 import Reel from '../models/reelmodel.js'
 import User from '../models/usermodel.js';
 import uploadOncloudinary from "../config/cloudinary.js";
+import { getSocketId, io } from "../socket.js";
 
 const uploadReel=async (req,res)=>{
      try{
@@ -83,10 +84,30 @@ const like= async (req, res) => {
 
     } else {
       // Agar liked nahi hai 
-      await reel.likes.push(req.userId);
+      reel.likes.push(req.userId);
+      if(reel.author._id!=req.userId){
+              const notificaton=await Notification.create({
+                 sender: req.userId,
+                 receiver: reel.author._id,
+                 type:"like",
+                 reel: reel._id,
+                 message:"liked your reel"
+              })
+              const populateNotification=await Notification.findById(notificaton._id)
+              .populate("sender receiver reel")
+              }
+              const receiverSocketId=getSocketId(reel.author._id)
+              if(receiverSocketId){
+                io.to(receiverSocketId).emit("newNotification",populateNotification)
+          }
     }
     await reel.save()
     await reel.populate("author","name userName profileImage")
+
+    io.emit("likedReel",{
+      reelId:reel._id,
+      likes:reel.likes
+    })
 
     res.status(200).json({
         success:true,
@@ -122,6 +143,22 @@ const comment = async (req, res) => {
     };
 
     reel.comments.push(newComment);
+    if(reel.author._id!=req.userId){
+            const notificaton=await Notification.create({
+               sender: req.userId,
+               receiver: reel.author._id,
+                type:"comment",
+                reel: reel._id,
+                message:"commented on your reel"
+            })
+            const populateNotification=await Notification.findById(notificaton._id)
+            .populate("sender receiver reel")
+            }
+            const receiverSocketId=getSocketId(reel.author._id)
+            if(receiverSocketId){
+              io.to(receiverSocketId).emit("newNotification",populateNotification)
+        }
+
     await reel.save();
     
     await reel.populate({
@@ -132,6 +169,11 @@ const comment = async (req, res) => {
         path: "comments.author",
         select: "name userName profileImage"
     });
+
+    io.emit("commentedReel",{
+      reelId:reel._id,
+      comments:reel.comments
+    })
 
     return res.status(201).json({
       success: true,  

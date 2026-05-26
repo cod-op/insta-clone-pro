@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import dp from '../assets/dp.png'
 import { useNavigate } from 'react-router-dom'
 import VideoPlayer from './VideoPlayer'
@@ -14,12 +14,13 @@ import { backendUrl } from '../App';
 import { setPostData } from '../redux/postSlice';
 import { setUserData } from '../redux/userSlice';
 import Follow from './Follow';
-import EmojiPicker from './EmojiPicker';
+import EmojiPicker from './EmojiPickerComponent';
 
 const Post = ({post}) => {
     const navigate=useNavigate()
     const {userData}=useSelector(state=>state.user)
-    const { postData } = useSelector(state => state.post);
+    const { postData } = useSelector(state => state.post)
+    const { socket } = useSelector(state => state.socket)
     const [showComment,setShowComment]=useState(false)
     const [message,setMessage]=useState("")
     const dispatch=useDispatch()
@@ -65,7 +66,19 @@ const Post = ({post}) => {
       }
     }
 
-
+  useEffect(()=>{
+   socket?.on("likedPost",(updatedData)=>{
+    const updatedPosts=postData.map(p=>p._id===updatedData.postId?{...p,likes:updatedData.likes}:p)
+    dispatch(setPostData(updatedPosts))
+   })
+   socket?.on("commentedPost",(updatedData)=>{
+    const updatedPosts=postData.map(p=>p._id===updatedData.postId?{...p,comments:updatedData.comments}:p)
+    dispatch(setPostData(updatedPosts))
+   })
+   return ()=>{socket?.off("likedPost")
+      socket?.off("commentededPost")
+   }
+  },[socket,postData,dispatch])
 
   return (
     <div className='w-[90%]  flex flex-col gap-[10px] bg-white items-center  shadow-2xl shadow-[#00000058] rounded-2xl pb-[20px]'>

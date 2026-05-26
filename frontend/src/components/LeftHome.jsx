@@ -12,7 +12,8 @@ import OtherUser from './OtherUser';
 
 const LeftHome = () => {
     const {userData,suggestedUsers}=useSelector(state=>state.user)
-   const dispatch=useDispatch()
+    const {notificationData}=useSelector(state=>state.user)
+    const dispatch=useDispatch()
     const handleLogout=async()=>{
        
         try{
@@ -28,8 +29,14 @@ const LeftHome = () => {
 
        <div className='w-full h-[100px] flex items-center justify-between p-[20px]'>
           <img src={logo} alt="" className='w-[150px]' />
-          <div>
+          <div className='relative'>
             <IoMdHeartEmpty  className='text-white w-[25px] h-[25px]'/>
+            {(notificationData?.length>0 && notificationData.some((noti)=>
+              noti.isRead===false)) &&
+              <div className='w-[10px] h-[10px] bg-blue-600 rounded-full absolute top-0 right-0'>
+
+            </div>
+            }
           </div>
         </div>
     

@@ -10,11 +10,12 @@ import ReceiverMessage from '../components/ReceiverMessage';
 import axios from 'axios';
 import { backendUrl } from '../App';
 import { setMessages ,setSelectedUser} from '../redux/messageSlice';
-import EmojiPicker from "../components/EmojiPicker";
+import EmojiPicker from "../components/EmojiPickerComponent";
 
 const MessageArea = () => {
     const {selectedUser,messages}=useSelector(state=>state.message)
     const {userData}=useSelector(state=>state.user)
+    const {socket}=useSelector(state=>state.socket)
     const navigate=useNavigate()
     const [input,setInput]=useState("")
     const imageInput=useRef()
@@ -66,6 +67,13 @@ const MessageArea = () => {
       getAllMessages();
    }
 }, [selectedUser]);
+
+useEffect(()=>{
+  socket.on("newMessage",(mess)=>{
+   dispatch(setMessages([...messages,mess]))
+  })
+  socket.off("newMessage");
+},[socket, messages])
 
   return (
     <div className='w-full h-[100vh] bg-black relative'>
