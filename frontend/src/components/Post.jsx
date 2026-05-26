@@ -76,7 +76,7 @@ const Post = ({post}) => {
     dispatch(setPostData(updatedPosts))
    })
    return ()=>{socket?.off("likedPost")
-      socket?.off("commentededPost")
+      socket?.off("commentedPost")
    }
   },[socket,postData,dispatch])
 
@@ -139,12 +139,14 @@ const Post = ({post}) => {
          {showComment  && 
          <div className='w-full flex-col gap-[30px] pb-[20px] '>
               <div className='w-full h-[80px] flex items-center px-[20px] gap-5 relative'>
-                <div  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
+                <div  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full shrink-0 cursor-pointer overflow-hidden'>
                     <img src={userData?.profileImage || dp} alt="" className='w-full h-full object-cover' />
                 </div>
-                <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='flex-1 px-[10px] border-b-2 border-b-gray-500  outline-none h-[40px]'/>
-                  <EmojiPicker setValue={setMessage} tailwind={'w-[25px] h-[25px] text-black cursor-pointer'} />
-                <button onClick={handleComment} className='cursor-pointer'><IoSend className='w-[25px] h-[25px]'/></button>
+                <div className="flex-1 flex items-center border-b-2 border-gray-500 h-[40px]">
+                   <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='flex-1 outline-none h-full bg-transparent'/>
+                   <EmojiPicker setValue={setMessage} tailwind={'w-[25px] h-[25px] text-black cursor-pointer'} />
+                   <button onClick={handleComment} className='cursor-pointer ml-2'><IoSend className='w-[25px] h-[25px]'/></button>
+                </div>
               </div>
 
               <div className='w-full max-h-[300px] overflow-auto'>

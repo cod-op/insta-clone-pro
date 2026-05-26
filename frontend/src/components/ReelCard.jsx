@@ -178,7 +178,7 @@ const ReelCard = ({reel}) => {
                     {reel?.likes?.includes(userData?._id)&& <FaHeart className='w-[25px] h-[25px] cursor-pointer text-red-600'/>}
                     <span>{reel?.likes?.length || 0}</span>
                  </div>
-                <div className='flex flex-col items-center cursor-pointer z-[500]'>
+                <div className='flex flex-col items-center cursor-pointer'>
                     <MdOutlineComment onClick={()=>setShowComment(prev=>!prev)} className='w-[25px] h-[25px] cursor-pointer'/>
                     <span>{reel?.comments?.length || 0}</span> 
                 </div>       
@@ -206,14 +206,15 @@ const ReelCard = ({reel}) => {
                    ))}
               </div>
 
-              <div className='w-full bottom-0 fixed h-[80px] flex items-center gap-[10px] px-[20px]'>
-                 <div  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
+              <div className='w-full absolute bottom-0  h-[80px] flex items-center gap-[10px] px-[20px]'>
+                 <div  className='w-[40px] h-[40px] flex-shrink-0 md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
                     <img src={userData?.profileImage || dp} alt="" className='w-full h-full object-cover text-white' />
                  </div>
-                 
+                 <div className="flex-1 flex items-center border-b border-gray-500 min-w-0">
                  <input onChange={(e)=>setMessage(e.target.value)} value={message} type="text" placeholder='write comment...' className='flex-1 px-[10px] border-b-2 border-b-gray-500 outline-none h-[40px] text-white bg-transparent'/>
                     <EmojiPicker setValue={setMessage} tailwind={"w-[25px] h-[25px] text-white cursor-pointer"} />
-                  <button onClick={handleComment} className=' cursor-pointer'><IoSend className='w-[25px] h-[25px] text-white'/></button>
+                  </div>
+                  <button onClick={handleComment} className='flex-shrink-0 cursor-pointer'><IoSend className='w-[22px] h-[22px] text-white'/></button>
               </div>
          </div>
 
