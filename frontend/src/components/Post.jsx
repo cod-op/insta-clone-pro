@@ -155,11 +155,14 @@ const Post = ({post}) => {
 
               <div className='w-full max-h-[300px] overflow-auto'>
                 {post?.comments?.map((com,index)=>(
-                     <div key={index} className='w-full px-[20px] flex items-center gap-[20px] border-b-2 border-b-gray-200'> 
-                        <div   className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
+                     <div key={index} className='w-full px-[20px] flex items-start gap-[12px] border-b-2 border-b-gray-200 py-2'> 
+                        <div   className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden shrink-0'>
                             <img src={com?.author?.profileImage || dp} alt="" className='w-full h-full object-cover' />
                          </div>
-                          <div>{com.message}</div>
+                          <div className='flex-1 break-words whitespace-pre-wrap text-[14px]'>
+                            <span className='font-semibold mr-2'> {com?.author?.userName}</span>
+                              {com.message}
+                         </div>
                      </div>
                      ))}
               </div>
