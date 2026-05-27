@@ -75,11 +75,6 @@ const timer = setTimeout(() => {
     }
   },[userData])
 
-  // useEffect(()=>{
-  //   socket.on("newNotification",(noti)=>{
-  //     dispatch(setNotificationData(noti)) 
-  //   })
-  // },[socket])
 
   
 if (isInitializing && !userData) {

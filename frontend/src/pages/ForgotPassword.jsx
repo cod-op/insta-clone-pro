@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 import {backendUrl} from '../App'
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ForgotPassword = () => {
 
@@ -17,8 +18,10 @@ const [email,setEmail]=useState("");
 const [otp,setOtp]=useState("");
 const [newPassword,setNewPassword]=useState("");
 const [confirmNewPassword,setConfirmNewPassword]=useState("");
+const [success, setSuccess] = useState("");
 const [err,setErr]=useState("");
 const [loading,setLoading]=useState(false);
+const navigate=useNavigate()
 
 const handleStep1=async()=>{
   setLoading(true)
@@ -61,6 +64,9 @@ const handleStep3=async()=>{
     const result=await axios.post(backendUrl+'/api/auth/resetpassword',{email,password:newPassword},{withCredentials:true})
     console.log(result.data);
     setLoading(false)
+     console.log(result.data.message);
+     setStep(4)
+   
   
   }catch(error){
      setErr(error.response?.data?.message)
@@ -118,7 +124,21 @@ const handleStep3=async()=>{
                  {loading?<ClipLoader size={30} color='green'/>:"Reset Password"}    
              </button>
       </div>}
-          
+
+      {step == 4 && (
+          <div className='w-[90%] max-w-[500px] h-[300px] bg-white rounded-2xl flex justify-center items-center flex-col'>
+                <h2 className='text-green-600 text-[25px] font-semibold'> Password Reset Successful 🎉 </h2>
+
+              <p className='text-gray-600 mt-[10px]'>
+                 Now you can login with your new password
+              </p>
+
+               <button onClick={() => navigate("/signin")} className='mt-[20px] bg-black text-white px-[20px] py-[10px] rounded-xl cursor-pointer' >
+                  Go to Login
+              </button>
+
+          </div>
+        )}   
     </div>
   )
 }

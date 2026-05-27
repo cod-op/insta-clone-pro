@@ -170,10 +170,17 @@ const verifyOtp=async(req,res)=>{
          });
       }
 
-      user.isOtpVerified=true
-      user.resetOtp=undefined
-      user.otpExpires=undefined
-      await user.save();
+      await User.updateOne(
+      { email },
+      {
+        $set: { isOtpVerified: true },
+        $unset: {
+          resetOtp: 1,
+          otpExpires: 1
+        }
+      }
+    );
+
 
       res.status(200).json({ 
             success: true, 
@@ -190,10 +197,11 @@ const resetPassword=async(req,res)=>{
 try{
     const {email,password}=req.body;
     const user = await User.findOne({ email });
-    if(!user || !user.isOtpVerified ){
-        return res.status(400).json({
-          message:"Otp Verification required"  
-        })
+   if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    if (!user.isOtpVerified) {
+      return res.status(400).json({ message: "OTP verification required" });
     }
 
     const hashedPassword=await bcrypt.hash(password,10);
