@@ -1,3 +1,5 @@
+import dns from "dns";
+dns.setDefaultResultOrder('ipv4first');
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
@@ -12,6 +14,10 @@ const transporter = nodemailer.createTransport({
     user: process.env.BREVO_USER,
     pass: process.env.BREVO_PASS,
   },
+  pool: true,
+  connectionTimeout: 60000, // 60 seconds
+  socketTimeout: 60000,
+  greetingTimeout: 30000,
 });
 
 
