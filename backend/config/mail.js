@@ -1,17 +1,27 @@
 import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
+import dns from 'dns'
 dotenv.config()
 
+dns.setDefaultResultOrder('ipv4first')
+
 const transporter=nodemailer.createTransport({
-    service:"Gmail",
-    port:465,
-    secure:true,
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth:{
         user:process.env.EMAIL,
         pass:process.env.PASS,
     }
 })
 
+transporter.verify((err) => {
+    if (err) {
+        console.log("SMTP ERROR:", err);
+    } else {
+        console.log("SMTP CONNECTED");
+    }
+})
 
 const sendEmail=async(sender,otp)=>{
    await  transporter.sendMail({
