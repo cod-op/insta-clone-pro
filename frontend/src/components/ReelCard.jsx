@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {FaVolumeMute , FaVolumeUp } from "react-icons/fa";
 import dp from '../assets/dp.png'
-import { setUserData } from '../redux/userSlice';
 import { setReelData } from '../redux/reelSlice';
 import Follow from './Follow';
 import { useDispatch, useSelector } from 'react-redux';
@@ -96,26 +95,24 @@ const ReelCard = ({reel}) => {
     },[showComment])
 
     useEffect(()=>{
+      const video = videoRef.current;
+      if (!video) return undefined;
+
       const observer=new IntersectionObserver((entries)=>{
         const entry=entries[0]
-        const video=videoRef.current
         if(entry.isIntersecting){
           video.play()
           setIsPlaying(true)
         }
         else {
-            videoRef.current.pause()
+            video.pause()
             setIsPlaying(false)
           }
       },{threshold:0.6})
 
-      if(videoRef.current){
-        observer.observe(videoRef.current)
-      }
+      observer.observe(video)
       return ()=>{
-       if(videoRef.current){
-        observer.unobserve(videoRef.current)
-      }
+        observer.unobserve(video)
       }
     },[])
 

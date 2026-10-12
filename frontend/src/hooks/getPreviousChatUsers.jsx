@@ -1,32 +1,17 @@
-import React, { useEffect } from 'react'
-import { backendUrl } from '../App'
-import axios from 'axios'
-import { useDispatch, useSelector } from 'react-redux'
-import { setFollowing, setUserData} from '../redux/userSlice'
-import { setPreviousChatUsers } from '../redux/messageSlice'
+import axios from 'axios';
+import { backendUrl } from '../App';
+import { setPreviousChatUsers } from '../redux/messageSlice';
 
+const getPreviousChatUsers = async (dispatch) => {
+  try {
+    const result = await axios.get(`${backendUrl}/api/message/previouschats`, { withCredentials: true });
 
-const getPreviousChatUsers = () => {
-    const dispatch=useDispatch()
-    const {messages}=useSelector(state=>state.message)
-   useEffect(()=>{
-   const fetchUser=async()=>{
-    try{
-
-     const result=await axios.get(`${backendUrl}/api/message/previouschats`,
-        {withCredentials:true})
-
-        if (result.data) {
-             dispatch(setPreviousChatUsers(result.data)); 
-         }
-         
-    }catch(error){
-       console.log(error);
+    if (result.data) {
+      dispatch(setPreviousChatUsers(result.data));
     }
-   }
-   fetchUser()
- },[dispatch,messages])
- 
-}
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-export default getPreviousChatUsers
+export default getPreviousChatUsers;

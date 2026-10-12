@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { IoArrowBackSharp } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
@@ -64,23 +64,25 @@ const MessageArea = () => {
 
 
 
-   const getAllMessages=async()=>{
-       if (!selectedUser?._id) return;
+   const selectedUserId = selectedUser?._id;
+
+   const getAllMessages = useCallback(async () => {
+       if (!selectedUserId) return;
       try{
-        const result=await axios.get(`${backendUrl}/api/message/getall/${selectedUser._id}`,{withCredentials:true})
+        const result=await axios.get(`${backendUrl}/api/message/getall/${selectedUserId}`,{withCredentials:true})
         console.log("getallmesssasge",result.data)
         dispatch(setMessages(result.data))
       }catch(error){
         console.log(error)
       }
-   }
+   }, [dispatch, selectedUserId]);
 
 
   useEffect(() => {
-   if (selectedUser?._id) {
+   if (selectedUserId) {
       getAllMessages();
    }
-}, [selectedUser?._id]);
+}, [getAllMessages, selectedUserId]);
 
 useEffect(()=>{
   if (!socket) return;
@@ -120,7 +122,7 @@ useEffect(()=>{
         </div>
 
         <div className='w-full h-[80%] pt-[100px] pb-[80px] px-[40px] flex flex-col gap-[50px] overflow-auto bg-black'>
-           {messages && messages.map((mess,index)=>(
+           {messages && messages.map((mess)=>(
               mess.sender===userData?._id ? <SenderMesage message={mess} key={mess._id}/>: < ReceiverMessage message={mess} key={mess._id}/>
            ))}
         </div>

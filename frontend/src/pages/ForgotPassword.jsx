@@ -18,7 +18,6 @@ const [email,setEmail]=useState("");
 const [otp,setOtp]=useState("");
 const [newPassword,setNewPassword]=useState("");
 const [confirmNewPassword,setConfirmNewPassword]=useState("");
-const [success, setSuccess] = useState("");
 const [err,setErr]=useState("");
 const [loading,setLoading]=useState(false);
 const navigate=useNavigate()

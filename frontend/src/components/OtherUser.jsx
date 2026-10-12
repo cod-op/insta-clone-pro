@@ -1,11 +1,9 @@
 import React from 'react'
 import dp from '../assets/dp.png'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import Follow  from './Follow'
 
 const OtherUser = ({user}) => {
-      const {userData}=useSelector(state=>state.user)
       const navigate=useNavigate()
 
   return (

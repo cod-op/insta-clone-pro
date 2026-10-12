@@ -19,26 +19,24 @@ const handleClick=()=>{
 }
 
 useEffect(()=>{
+      const video = videoTag.current;
+      if (!video) return undefined;
+
       const observer=new IntersectionObserver((entries)=>{
         const entry=entries[0]
-        const video=videoTag.current
         if(entry.isIntersecting){
           video.play()
           setIsPlaying(true)
         }
         else {
-            videoTag.current.pause()
+            video.pause()
             setIsPlaying(false)
           }
       },{threshold:0.6})
 
-      if(videoTag.current){
-        observer.observe(videoTag.current)
-      }
+      observer.observe(video)
       return ()=>{
-       if(videoTag.current){
-        observer.unobserve(videoTag.current)
-      }
+        observer.unobserve(video)
       }
     },[])
 

@@ -1,14 +1,11 @@
-import React from 'react'
 import logo from '../assets/logo.png'
 import dp from '../assets/dp.png'
 import { IoMdHeartEmpty } from "react-icons/io";
 import axios from 'axios';
 import { backendUrl } from '../App';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setUserData } from '../redux/userSlice';
 import OtherUser from './OtherUser';
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Notifications from '../pages/Notifications';
 
@@ -22,8 +19,8 @@ const LeftHome = () => {
 
     const handleLogout=async()=>{
         try{
-           const result=await axios.get(`${backendUrl}/api/auth/signout`,{withCredentials:true})
-           dispatch(setUserData(null))
+           await axios.get(`${backendUrl}/api/auth/signout`,{withCredentials:true});
+           dispatch(setUserData(null));
         }catch(error){
              console.log(error);
         }

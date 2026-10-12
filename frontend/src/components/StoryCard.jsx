@@ -17,15 +17,15 @@ const StoryCard = () => {
 
     useEffect(()=>{
            if (!storyData) return
-            setProgress(0)
-            const interval=setInterval(()=>{
+
+           const interval=setInterval(()=>{
                 setProgress(prev=>
                     {if(prev>=100){
                         clearInterval(interval)
                         navigate('/')
                         return 100
                     }
-                    return prev+1}) 
+                    return prev+1})
             },150)
             return ()=>clearInterval(interval)
         },[navigate,storyData])

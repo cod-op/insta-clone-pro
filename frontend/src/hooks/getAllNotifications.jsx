@@ -1,28 +1,17 @@
-import React, { useEffect } from 'react'
-import { backendUrl } from '../App'
-import axios from 'axios'
-import { useDispatch, useSelector } from 'react-redux'
-import { setNotificationData, setUserData } from '../redux/userSlice'
+import axios from 'axios';
+import { backendUrl } from '../App';
+import { setNotificationData } from '../redux/userSlice';
 
-const getAllNotifications = () => {
-    const dispatch=useDispatch()
+const getAllNotifications = async (dispatch) => {
+  try {
+    const result = await axios.get(`${backendUrl}/api/user/getallnotifications`, { withCredentials: true });
 
-    const {userData} = useSelector(state => state.user)
-  
-    const fetchNotifications=async()=>{
-    try{
-
-     const result=await axios.get(`${backendUrl}/api/user/getallnotifications`,
-        {withCredentials:true})
-
-        if (result.data) {
-             dispatch(setNotificationData(result.data));
-         }
-    }catch(error){
-       console.log(error);
+    if (result.data) {
+      dispatch(setNotificationData(result.data));
     }
-   }
-   fetchNotifications()
-}
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-export default getAllNotifications
+export default getAllNotifications;

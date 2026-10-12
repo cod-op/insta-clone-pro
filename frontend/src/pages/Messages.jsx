@@ -11,7 +11,7 @@ const Messages = () => {
   const {userData}=useSelector(state=>state.user)
   const {onlineUsers}=useSelector(state=>state.socket)
   const navigate=useNavigate()
-  const {previousChatUsers,selectedUser}=useSelector(state=>state.message)
+  const {previousChatUsers}=useSelector(state=>state.message)
   const dispatch=useDispatch()
     
 

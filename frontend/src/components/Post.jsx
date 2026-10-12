@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import dp from '../assets/dp.png'
 import { useNavigate } from 'react-router-dom'
 import VideoPlayer from './VideoPlayer'

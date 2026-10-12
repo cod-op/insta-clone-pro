@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux'
 import dp from '../assets/dp.png'
 
 const ReceiverMessage = ({message}) => {
-  const {userData}=useSelector(state=>state.user)
   const {selectedUser}=useSelector(state=>state.message)
   const scroll=useRef()
 

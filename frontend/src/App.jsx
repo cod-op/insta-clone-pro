@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import getCurrentUser from "./hooks/getCurrentUser";
 import getSuggestedUser from "./hooks/getSuggestedUser";
 import Profile from "./pages/Profile";
-import { useEffect } from "react";
 import EditProfile from "./pages/EditProfile";
 import Upload from "./pages/Upload";
 import getAllPost from "./hooks/getAllPost";
@@ -18,31 +17,36 @@ import Story from "./pages/Story";
 import getAllStories from "./hooks/getAllStories";
 import Messages from "./pages/Messages";
 import MessageArea from "./pages/MessageArea";
-import {io} from "socket.io-client"
+import { io } from "socket.io-client";
 import { setOnlineUsers, setSocket } from "./redux/socketSlice";
 import getfollowingList from "./hooks/getFollowingList";
 import getPreviousChatUsers from "./hooks/getPreviousChatUsers";
 import Search from "./pages/Search";
 import getAllNotifications from "./hooks/getAllNotifications";
 import Notifications from "./pages/Notifications";
-import { setNotificationData } from "./redux/userSlice";
 
-
-export const backendUrl = window.location.hostname === "localhost" 
-  ? "http://localhost:8050" 
+/* eslint-disable react-refresh/only-export-components */
+export const backendUrl = window.location.hostname === "localhost"
+  ? "http://localhost:8050"
   : "https://insta-pro-backend.onrender.com";
- function App() {
-    getCurrentUser()
-    getSuggestedUser()
-    getAllPost()
-    getAllReels()
-    getAllStories()
-    getfollowingList()
-    getPreviousChatUsers()
-    getAllNotifications()
+
+function App() {
 const {userData}=useSelector(state=>state.user)
 const {socket}=useSelector(state=>state.socket)
 const dispatch=useDispatch()
+
+useEffect(() => {
+  if (!userData) return;
+
+  getCurrentUser(dispatch);
+  getSuggestedUser(dispatch);
+  getAllPost(dispatch);
+  getAllReels(dispatch);
+  getAllStories(dispatch);
+  getfollowingList(dispatch);
+  getPreviousChatUsers(dispatch);
+  getAllNotifications(dispatch);
+}, [dispatch, userData]);
 
 const [isInitializing, setIsInitializing] = useState(true);
 useEffect(() => {
@@ -54,26 +58,29 @@ const timer = setTimeout(() => {
   }, []);
 
 
-  useEffect(()=>{
-    
-    if(userData){
-      const socketIo=io(backendUrl,{
-        query:{
-          userId:userData._id
+  useEffect(() => {
+    if (userData) {
+      const socketIo = io(backendUrl, {
+        query: {
+          userId: userData._id,
         },
-      })
-      dispatch(setSocket(socketIo))
-      socketIo.on('getOnlineUsers',(users)=>{
-         dispatch(setOnlineUsers(users))
-      })
-      return ()=>socketIo.close()
-    }else{
-      if(socket){
-        socket.close()
-        dispatch(setSocket(null))
-      }
+      });
+
+      dispatch(setSocket(socketIo));
+      socketIo.on("getOnlineUsers", (users) => {
+        dispatch(setOnlineUsers(users));
+      });
+
+      return () => socketIo.close();
     }
-  },[userData])
+
+    if (socket) {
+      socket.close();
+      dispatch(setSocket(null));
+    }
+
+    return undefined;
+  }, [userData, dispatch, socket]);
 
 
   

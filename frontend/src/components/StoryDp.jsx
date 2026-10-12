@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react'
 import dp from '../assets/dp.png'
 import { FiPlusCircle } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
@@ -10,19 +9,10 @@ import { setStoryData } from '../redux/storySlice';
 const StoryDp = ({profileImage,userName,story}) => {
    const navigate=useNavigate()
    const {userData}=useSelector(state=>state.user)
-   const {storyData}=useSelector(state=>state.story)
    const dispatch = useDispatch()
-   const [viewed,setViewed]=useState(false)
-
-   useEffect(()=>{
-      if(story?.viewers?.some((viewer)=>
-      viewer?._id?.toString()===userData?._id?.toString())){
-         setViewed(true);
-      }
-      else{
-         setViewed(false)
-      }
-   },[story,userData,storyData])
+   const viewed = Boolean(story?.viewers?.some((viewer) =>
+      viewer?._id?.toString() === userData?._id?.toString()
+   ))
 
    const hasValidStory = story && story._id && story._id !== "undefined";
 

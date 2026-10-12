@@ -1,7 +1,5 @@
-import React from 'react'
 import { IoMdHeartEmpty } from "react-icons/io";
 import logo from '../assets/logo.png'
-import dp from '../assets/dp.png'
 import StoryDp from './StoryDp.jsx'
 import Navbar from './Navbar.jsx';
 import { useSelector } from 'react-redux';

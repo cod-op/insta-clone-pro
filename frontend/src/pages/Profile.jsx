@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import dp from '../assets/dp.png'
 import { backendUrl } from '../App'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -21,30 +21,29 @@ const Profile = () => {
     const navigate=useNavigate()
     const [postType,setPostType]=useState("posts")
 
-   const handleProfile=async()=>{
-    try{
-        const result=await axios.get(`${backendUrl}/api/user/getprofile/${userName}`,{withCredentials:true})
+   const handleProfile = useCallback(async () => {
+    try {
+        const result = await axios.get(`${backendUrl}/api/user/getprofile/${userName}`, { withCredentials: true });
         console.log(result.data);
-        dispatch(setProfileData(result.data.user))
-
-    }catch(error){
+        dispatch(setProfileData(result.data.user));
+    } catch (error) {
         console.log(error);
     }
-   }
+   }, [dispatch, userName]);
 
     const handleLogout=async()=>{
        
         try{
-           const result=await axios.get(`${backendUrl}/api/auth/signout`,{withCredentials:true})
-           dispatch(setUserData(null))
+           await axios.get(`${backendUrl}/api/auth/signout`,{withCredentials:true});
+           dispatch(setUserData(null));
         }catch(error){
              console.log(error);
         }
     }
 
    useEffect(()=>{
-      handleProfile()
-   },[userName,dispatch])
+      handleProfile();
+   },[handleProfile])
 
   return (
     <div className='w-full min-h-screen bg-black'>
@@ -132,15 +131,15 @@ const Profile = () => {
        </div>
               <Navbar/> 
        
-          {postData.map((post, index) => {
+          {(postData || []).map((post) => {
            if (postType === "posts") {
               return post.author?._id === profileData?._id ? <Post key={post._id} post={post} /> : null;
-           } else {
-          const isSaved = userData?.saved?.some(savedItem => 
-           (savedItem._id || savedItem) === post._id);
-    
-          return isSaved ? <Post key={post._id} post={post} /> : null;
-            }
+           }
+
+           const isSaved = userData?.saved?.some(savedItem => 
+             (savedItem._id || savedItem) === post._id);
+
+           return isSaved ? <Post key={post._id} post={post} /> : null;
          })}
 
           </div>
