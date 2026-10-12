@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { IoArrowBackSharp } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ import SenderMesage from '../components/SenderMesage';
 import ReceiverMessage from '../components/ReceiverMessage';
 import axios from 'axios';
 import { backendUrl } from '../App';
-import { setMessages ,setSelectedUser} from '../redux/messageSlice';
+import { addMessage, mergeMessages, setMessages, setSelectedUser } from '../redux/messageSlice';
 import EmojiPicker from "../components/EmojiPickerComponent";
 
 const MessageArea = () => {
@@ -53,7 +53,7 @@ const MessageArea = () => {
          }
         const result=await axios.post(`${backendUrl}/api/message/send/${selectedUser._id}`,formData,{withCredentials:true})
         console.log("message response ",result.data)
-        dispatch(setMessages([...messages, result.data]))
+        dispatch(addMessage(result.data))
         setInput('')
         setBackendImage(null)
         setFrontendImage(null)
@@ -66,37 +66,43 @@ const MessageArea = () => {
 
    const selectedUserId = selectedUser?._id;
 
-   const getAllMessages = useCallback(async () => {
-       if (!selectedUserId) return;
-      try{
-        const result=await axios.get(`${backendUrl}/api/message/getall/${selectedUserId}`,{withCredentials:true})
-        console.log("getallmesssasge",result.data)
-        dispatch(setMessages(result.data))
-      }catch(error){
+  useEffect(() => {
+    dispatch(setMessages([]))
+    if (!selectedUserId) return;
+
+    let isCurrentConversation = true
+    const getAllMessages = async () => {
+      try {
+        const result = await axios.get(`${backendUrl}/api/message/getall/${selectedUserId}`, { withCredentials: true })
+        if (isCurrentConversation) {
+          dispatch(mergeMessages(result.data))
+        }
+      } catch (error) {
         console.log(error)
       }
-   }, [dispatch, selectedUserId]);
+    }
 
+    getAllMessages()
+    return () => {
+      isCurrentConversation = false
+    }
+  }, [dispatch, selectedUserId])
 
   useEffect(() => {
-   if (selectedUserId) {
-      getAllMessages();
-   }
-}, [getAllMessages, selectedUserId]);
+    if (!socket) return;
 
-useEffect(()=>{
-  if (!socket) return;
-
-  const handleNewMessage = (mess) => {
-    if (mess.sender === selectedUser?._id || mess.sender === userData?._id) {
-          dispatch(setMessages([...messages, mess]))
-        }
+    const getId = (user) => user?._id ?? user
+    const handleNewMessage = (message) => {
+      const senderId = String(getId(message.sender))
+      if (senderId === String(selectedUserId) || senderId === String(userData?._id)) {
+        dispatch(addMessage(message))
       }
- socket.on("newMessage", handleNewMessage);
-  return () => {
-            socket.off("newMessage", handleNewMessage); 
-        };
-    }, [socket, messages, dispatch, selectedUser?._id, userData?._id])
+    }
+    socket.on("newMessage", handleNewMessage)
+    return () => {
+      socket.off("newMessage", handleNewMessage)
+    }
+  }, [socket, dispatch, selectedUserId, userData?._id])
 
     if (!selectedUser) {
         return (

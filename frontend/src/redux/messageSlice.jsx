@@ -14,11 +14,21 @@ const messageSlice=createSlice({
         setMessages:(state,action)=>{
             state.messages=action.payload
         },
+        mergeMessages:(state,action)=>{
+            const messagesById=new Map(action.payload.map(message=>[message._id,message]))
+            state.messages.forEach(message=>messagesById.set(message._id,message))
+            state.messages=Array.from(messagesById.values())
+        },
+        addMessage:(state,action)=>{
+            if(!state.messages.some(message=>message._id===action.payload._id)){
+              state.messages.push(action.payload)
+            }
+        },
         setPreviousChatUsers:(state,action)=>{
             state.previousChatUsers=action.payload
         }
     }
 })
 
-export const {setSelectedUser,setMessages,setPreviousChatUsers}=messageSlice.actions;
+export const {setSelectedUser,setMessages,mergeMessages,addMessage,setPreviousChatUsers}=messageSlice.actions;
 export default messageSlice.reducer
