@@ -81,7 +81,7 @@ const Post = ({post}) => {
   },[socket,postData,dispatch])
 
   return (
-    <div className='w-full  flex flex-col gap-[10px] bg-white items-center  shadow-2xl shadow-[#00000058] rounded-2xl pb-[20px]'>
+    <div className='w-full max-w-[640px] min-w-0 mx-auto flex flex-col gap-[10px] bg-white items-center shadow-2xl shadow-[#00000058] rounded-2xl pb-[20px]'>
          <div className='w-full h-[80px] flex justify-between items-center px-[10px] '>
             <div className='flex justify-center items-center gap-[10px] md:gap-[20px]'>
                 <div onClick={()=>navigate(`/profile/${post?.author?.userName}`)}  className='w-[40px] h-[40px] md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
@@ -97,14 +97,14 @@ const Post = ({post}) => {
             }        
          </div>
 
-         <div className="w-[90%] flex items-center justify-center"> 
+         <div className="w-full min-w-0 px-3 sm:px-5 flex items-center justify-center">
              {post.mediaType==="image" && 
-                <div className='w-[80%]   flex flex-col items-center justify-center'>
-                  <img src={post.media} alt="" className='h-[300px] max-w-full object-cover rounded-2xl' />
+                <div className='w-full max-w-[600px] min-w-0 flex flex-col items-center justify-center'>
+                  <img src={post.media} alt="" className='block w-full max-h-[75vh] object-contain rounded-2xl' />
                  </div>
                }   
                {post.mediaType==="video" && 
-                 <div className='w-[80%]  flex flex-col items-center justify-center'>
+                 <div className='w-full max-w-[600px] min-w-0 flex flex-col items-center justify-center'>
                     <VideoPlayer media={post.media}/>
                   </div>
                }        
