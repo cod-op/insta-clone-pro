@@ -9,7 +9,7 @@ import axios from "axios";
 import { backendUrl } from "../App";
 import { setStoryData, updateStory } from "../redux/storySlice";
 
-const StoryCard = ({onNext}) => {
+const StoryCard = ({onNext,onPrevious,storyIndex,storyCount}) => {
     const {storyData}=useSelector(state=>state.story)
     const {userData}=useSelector(state=>state.user)
     const navigate=useNavigate()
@@ -22,20 +22,16 @@ const StoryCard = ({onNext}) => {
     const isOwner = storyData?.author?.userName === userData?.userName;
 
     useEffect(()=>{
-           if (!storyId) return
-           if(showViewers) return undefined
+        if(!storyId || showViewers || progress>=100) return undefined
+        const interval=setInterval(()=>setProgress(value=>Math.min(value+2,100)),100)
+        return ()=>clearInterval(interval)
+    },[progress,showViewers,storyId])
 
-           const interval=setInterval(()=>{
-                setProgress(prev=>
-                    {if(prev>=100){
-                        clearInterval(interval)
-                        onNext()
-                        return 100
-                    }
-                    return prev+1})
-            },150)
-            return ()=>clearInterval(interval)
-        },[storyId,onNext,showViewers])
+    useEffect(()=>{
+        if(progress===100 && !showViewers){
+            onNext()
+        }
+    },[onNext,progress,showViewers])
 
     useEffect(()=>{
         if(!storyId || storyAuthorId===userData?._id) return
@@ -68,14 +64,20 @@ const StoryCard = ({onNext}) => {
             </div>
          </div>
 
-         <div className='absolute top-[10px]  w-full h-[3px] bg-gray-900 z-1'>
-             <div className='w-[200px] h-full bg-white transition-all duration-200 ease-linear' style={{width:`${progress}%`}}>
+         <div className="absolute top-[10px] left-0 right-0 z-[510] flex gap-1 px-2">
+           {Array.from({length:storyCount},(_,index)=>(
+             <div key={index} className="h-[3px] flex-1 overflow-hidden rounded bg-gray-900">
+               <div
+                 className="h-full bg-white"
+                 style={{width:index<storyIndex?"100%":index===storyIndex?`${progress}%`:"0%"}}
+               />
              </div>
+           ))}
          </div>
 
         {!showViewers && 
         <>
-            <div onClick={() => isOwner && setShowViewers(true)} className={`w-full h-full flex items-center justify-center ${isOwner ? 'cursor-pointer' : ''}`}> 
+            <div className="w-full h-full flex items-center justify-center">
              {storyData.mediaType==="image" && 
                 <div className='w-full h-[100vh]  flex items-center justify-center'>
                   <img src={storyData.media} alt="" className='h-[300px] max-w-full object-cover' />
@@ -86,6 +88,10 @@ const StoryCard = ({onNext}) => {
                     <VideoPlayer media={storyData.media}/>
                   </div>
                }        
+            </div>
+            <div className="absolute inset-x-0 top-[60px] bottom-[80px] z-[100] flex">
+              <button type="button" aria-label="Previous story" onClick={onPrevious} className="h-full w-1/3"/>
+              <button type="button" aria-label="Next story" onClick={onNext} className="h-full w-2/3"/>
             </div>
 
          {isOwner  && 

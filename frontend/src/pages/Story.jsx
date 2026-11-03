@@ -57,9 +57,25 @@ const Story = () => {
     }
   },[dispatch,navigate,stories,storyIndex])
 
+  const showPreviousStory=useCallback(()=>{
+    if(storyIndex>0){
+      const previousIndex=storyIndex-1
+      setStoryIndex(previousIndex)
+      dispatch(setStoryData(stories[previousIndex]))
+    }else{
+      navigate('/')
+    }
+  },[dispatch,navigate,stories,storyIndex])
+
   return (
     <div className='w-full h-[100vh] bg-black flex justify-center items-center'>
-       {loadedUserName===userName && stories.length>0 ? <StoryCard key={stories[storyIndex]?._id} onNext={showNextStory}/> : <div className="text-white">{loading || loadedUserName!==userName?"Loading Story...":"Story unavailable."}</div>}
+       {loadedUserName===userName && stories.length>0 ? <StoryCard
+         key={stories[storyIndex]?._id}
+         onNext={showNextStory}
+         onPrevious={showPreviousStory}
+         storyIndex={storyIndex}
+         storyCount={stories.length}
+       /> : <div className="text-white">{loading || loadedUserName!==userName?"Loading Story...":"Story unavailable."}</div>}
     </div>
   )
 }
