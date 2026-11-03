@@ -107,7 +107,7 @@ const getStoryByUserName=async (req,res)=>{
     }
      const story=await Story.find({author:user._id })
      .populate("viewers author")
-     .sort({ createdAt: 1 })
+     .sort({ createdAt: 1, _id: 1 })
      return res.status(200).json({
       success: true,
       story
@@ -136,7 +136,7 @@ const getAllStories=async(req,res)=>{
    })
    .populate("viewers")
    .populate("author", "userName profileImage")
-   .sort({ createdAt: -1 })
+   .sort({ createdAt: -1, _id: -1 })
    return res.status(200).json({
       success: true,
       stories

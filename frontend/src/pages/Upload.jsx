@@ -9,45 +9,67 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setPostData } from '../redux/postSlice';
 import { setReelData } from '../redux/reelSlice';
 import { ClipLoader } from 'react-spinners';
-import { setUserData } from '../redux/userSlice';
-import { setStoryList } from '../redux/storySlice';
+import { appendUserStories } from '../redux/userSlice';
+import { appendStories } from '../redux/storySlice';
 
 const Upload = () => {
 
 const navigate=useNavigate()
 const [uploadType,setUploadType]=useState("post")
 const [frontendMedia,setFrontendMedia]=useState(null)
-const [storyFiles,setStoryFiles]=useState([])
 const [backendMedia,setBackendMedia]=useState(null)
 const [mediaType,setMediaType]=useState("")
 const [caption, setCaption] = useState("");
 const mediaInput=useRef()
-const storyPreviewUrls=useRef([])
 const dispatch=useDispatch()
 const {postData}=useSelector(state=>state.post)
 const {userData}=useSelector(state=>state.user)
 const {reelData}=useSelector(state=>state.reel)
-const {storyList}=useSelector(state=>state.story)
 const [loading,setLoading]=useState(false)
 const [uploadError,setUploadError]=useState("")
+const [uploadedStories,setUploadedStories]=useState([])
 
-React.useEffect(()=>()=>storyPreviewUrls.current.forEach(url=>URL.revokeObjectURL(url)),[])
+const uploadStories=async(files)=>{
+  setLoading(true)
+  setUploadError("")
+  const failedFiles=[]
+  for(const file of files){
+    try{
+      const formData=new FormData()
+      formData.append("media",file)
+      const result=await axios.post(`${backendUrl}/api/story/upload`,formData,{withCredentials:true})
+      const newStories=result.data.stories || [result.data.story]
+      dispatch(appendUserStories(newStories))
+      dispatch(appendStories(newStories))
+      setUploadedStories(previous=>{
+        const stories=new Map(previous.map(story=>[story._id,story]))
+        newStories.forEach(story=>stories.set(story._id,story))
+        return [...stories.values()]
+      })
+      if(result.data.warning) failedFiles.push(`${file.name}: ${result.data.warning}`)
+    }catch(error){
+      failedFiles.push(`${file.name}: ${error.response?.data?.message || "upload failed"}`)
+    }
+  }
+  setLoading(false)
+  if(failedFiles.length){
+    setUploadError(`Could not upload ${failedFiles.length} file(s): ${failedFiles.join("; ")}`)
+  }
+}
 
 const handleMedia=(e)=>{
   const files=Array.from(e.target.files || [])
   if(files.length===0) return
-  setUploadError("")
   if(uploadType==="story"){
-    const newStoryFiles=files.map(file=>{
-      const previewUrl=URL.createObjectURL(file)
-      storyPreviewUrls.current.push(previewUrl)
-      return {file,previewUrl}
-    })
-    setStoryFiles(previous=>[...previous,...newStoryFiles])
-    setFrontendMedia(null)
-    setBackendMedia(null)
+    if(files.some(file=>!file.type.startsWith("image/") && !file.type.startsWith("video/"))){
+      setUploadError("Stories must be image or video files.")
+    }else{
+      uploadStories(files)
+    }
+    e.target.value=""
     return
   }
+  setUploadError("")
   const file=files[0]
   if(file.type.includes("image")){
     setMediaType("image")
@@ -74,33 +96,6 @@ const uploadPost=async()=>{
   }
 }
 
-const uploadStory=async()=>{
-  try{
-    const formData=new FormData()
-    storyFiles.forEach(({file})=>formData.append("media",file))
-    const result=await axios.post(`${backendUrl}/api/story/upload`,formData,{withCredentials:true})
-    if (userData) {
-      const uploadedStories=result.data.stories || [result.data.story]
-      const uploadedStory=uploadedStories[uploadedStories.length-1]
-      dispatch(setUserData({
-        ...userData,
-        story:uploadedStory,
-        stories:[...(userData.stories || []),...uploadedStories]
-      }))
-      dispatch(setStoryList([...(storyList || []).filter(story=>
-        !uploadedStories.some(uploaded=>uploaded._id===story._id)
-      ),...uploadedStories]))
-    }
-    if(result.data.warning) window.alert(result.data.warning)
-    setLoading(false)
-     navigate('/')
-  }catch(error){
-   setUploadError(error.response?.data?.message || "Story upload failed. Please try again.")
-   setLoading(false)
-  }
-}
-
-
 const uploadReel=async()=>{
   try{
     const formData=new FormData
@@ -118,7 +113,7 @@ const uploadReel=async()=>{
 
 
 const handleUpload=async()=>{
-  if(uploadType==="story" ? storyFiles.length===0 : !backendMedia){
+  if(!backendMedia){
     setUploadError("Please select media to upload.")
     return
   }
@@ -127,13 +122,17 @@ const handleUpload=async()=>{
   if(uploadType==="post"){
     uploadPost()
   }
-  else if(uploadType==="story"){
-    uploadStory()
-  }
   else{
     uploadReel()
   }
 }
+
+const storiesToShow=[...(userData?.stories || []),userData?.story,...uploadedStories]
+  .filter(story=>story?._id)
+  .reduce((stories,story)=>{
+    if(!stories.some(existing=>existing._id===story._id)) stories.push(story)
+    return stories
+  },[])
 
   return (
     <div className='w-full h-[100vh] bg-black flex flex-col items-center'>
@@ -154,53 +153,68 @@ const handleUpload=async()=>{
              hover:bg-black rounded-full hover:text-white cursor-pointer shadow-2xl hover:shadow-black`}>Reel</div>
          </div>
 
-         { !frontendMedia && storyFiles.length===0 &&
+         {uploadType==="story" && <>
+           <input
+             type="file"
+             accept="image/*,video/*"
+             multiple
+             hidden
+             ref={mediaInput}
+             onChange={handleMedia}
+           />
+           {storiesToShow.length===0 ? (
+             <button type="button" disabled={loading} onClick={()=>mediaInput.current.click()} className="w-[80%] max-w-[500px] h-[250px] mt-[15vh] bg-[#0e1316] border-2 border-gray-800 text-white rounded-2xl flex flex-col items-center justify-center gap-2 disabled:opacity-50">
+               {loading?<ClipLoader size={30} color="#0095F6"/>:<FaRegSquarePlus className="w-8 h-8"/>}
+               <span>{loading?"Uploading story...":"Choose a story"}</span>
+             </button>
+           ) : (
+             <div className="w-[90%] max-w-[600px] mt-[8vh] grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[55vh] overflow-y-auto">
+               {storiesToShow.map(story=>(
+                 <div key={story._id} className="relative h-[180px] rounded-xl overflow-hidden bg-[#0e1316]">
+                   {story.mediaType==="video"
+                     ? <video src={story.media} className="w-full h-full object-cover" muted/>
+                     : <img src={story.media} alt="Uploaded story" className="w-full h-full object-cover"/>}
+                   <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1">Story</span>
+                 </div>
+               ))}
+               <button type="button" disabled={loading} onClick={()=>mediaInput.current.click()} className="h-[180px] rounded-xl border-2 border-dashed border-gray-500 text-white disabled:opacity-50">
+                 {loading?<ClipLoader size={30} color="#0095F6"/>:<FaRegSquarePlus className="mx-auto w-8 h-8"/>}
+                 <span className="block">{loading?"Uploading...":"Add story"}</span>
+               </button>
+             </div>
+           )}
+           {storiesToShow.length>0 && <button type="button" onClick={()=>navigate('/')} className="px-8 py-3 bg-white mt-6 rounded-xl">Done</button>}
+         </>}
+         {uploadType!=="story" && !frontendMedia &&
            <div onClick={()=>mediaInput.current.click()} className='w-[80%] max-w-[500px] h-[250px] bg-[#0e1316] border-gray-800 border-2 flex flex-col items-center justify-center
               gap-[8px] mt-[15vh] rounded-2xl cursor-pointer hover:bg-[#353a3d]'>
-              <input type="file" accept={uploadType==="reel"?"video/*":uploadType==="story"?"image/*,video/*":""}
-                multiple={uploadType==="story"} hidden ref={mediaInput} onChange={handleMedia}/>
+              <input type="file" accept={uploadType==="reel"?"video/*":""} hidden ref={mediaInput} onChange={handleMedia}/>
               <div onClick={()=>navigate('/upload')} ><FaRegSquarePlus  className='text-white w-[30px] h-[30px] cursor-pointer'/></div>
               <div className='text-white text-[19px] font-semi-bold'> Upload {uploadType}</div>
           </div>
         }
-        {uploadType==="story" && storyFiles.length>0 &&
-         <div className="w-[90%] max-w-[600px] mt-[8vh] grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[55vh] overflow-y-auto">
-           {storyFiles.map(({file,previewUrl},index)=>(
-             <div key={`${file.name}-${file.lastModified}-${index}`} className="relative h-[180px] rounded-xl overflow-hidden bg-[#0e1316]">
-               {file.type.startsWith("video/")
-                 ? <video src={previewUrl} className="w-full h-full object-cover" muted/>
-                 : <img src={previewUrl} alt={file.name} className="w-full h-full object-cover"/>}
-               <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 truncate">{file.name}</span>
-             </div>
-           ))}
-           <button type="button" onClick={()=>mediaInput.current.click()} className="h-[180px] rounded-xl border-2 border-dashed border-gray-500 text-white">
-             <FaRegSquarePlus className="mx-auto w-8 h-8"/> Add more
-           </button>
-           <input type="file" accept="image/*,video/*" multiple hidden ref={mediaInput} onChange={handleMedia}/>
-         </div>
-        }
-        {frontendMedia && 
+        {frontendMedia ? (
           <div className="w-[80%] max-w-[500px] h-[250px] flex flex-col items-center justify-center mt-[15vh]"> 
                {mediaType==="image" && 
                   <div className='w-[80%] max-w-[500px] h-[250px] flex flex-col items-center justify-center mt-[5vh]'>
                      <img src={frontendMedia} alt="" className='h-[60%] rounded-2xl' />
                      {uploadType!="story" && <input  onChange={(e) => setCaption(e.target.value)} type="text" value={caption} placeholder='write caption...' className='w-full border-b-gray-400 border-b-2 outline-none px-[10px] py-[5px] text-white mt-[20px]'/>}
                   </div>
-               }   
+               }
                {mediaType==="video" && 
                   <div className='w-[80%] max-w-[500px] h-[250px] flex flex-col items-center justify-center mt-[5vh]'>
                       <VideoPlayer media={frontendMedia}/>
                      {uploadType!="story" && <input onChange={(e) => setCaption(e.target.value)} type="text" value={caption} placeholder='write caption...' className='w-full border-b-gray-400 border-b-2 outline-none px-[10px] py-[5px] text-white mt-[20px]'/>}
                   </div>
                }        
-          </div>   
-         }
+          </div>
+        ) : null}
 
-        {(frontendMedia || (uploadType==="story" && storyFiles.length>0)) && 
+        {frontendMedia ? (
             <button onClick={handleUpload} className='px-[10px] w-[60%] max-w-[400px] py-[5px] h-[50px] bg-white mt-[50px] cursor-pointer rounded-2xl'>
-              {loading?<ClipLoader size={30} color="#0095F6"/>:`Upload ${uploadType==="story" && storyFiles.length>1?`${storyFiles.length} Stories`:uploadType}`}  
+              {loading?<ClipLoader size={30} color="#0095F6"/>:`Upload ${uploadType}`}
            </button>
-        }
+        ) : null}
         {uploadError && <p role="alert" className="text-red-400 text-center px-4 mt-3">{uploadError}</p>}
 
     </div>

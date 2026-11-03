@@ -14,6 +14,13 @@ const userSlice=createSlice({
         setUserData:(state,action)=>{
             state.userData=action.payload
         },
+        appendUserStories:(state,action)=>{
+            if(!state.userData) return
+            const stories=new Map((state.userData.stories || []).map(story=>[story._id,story]))
+            action.payload.forEach(story=>stories.set(story._id,story))
+            state.userData.stories=[...stories.values()]
+            state.userData.story=action.payload[action.payload.length-1] || state.userData.story
+        },
      setSuggestedUsers:(state,action)=>{
             state.suggestedUsers=action.payload
         },  
@@ -41,5 +48,5 @@ const userSlice=createSlice({
     }
 })
 
-export const {setUserData,setSuggestedUsers,setProfileData,setFollowing,toggleFollow,setSearchData,setNotificationData}=userSlice.actions;
+export const {setUserData,appendUserStories,setSuggestedUsers,setProfileData,setFollowing,toggleFollow,setSearchData,setNotificationData}=userSlice.actions;
 export default userSlice.reducer
