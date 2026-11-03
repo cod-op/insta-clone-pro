@@ -75,7 +75,6 @@ const deletePost = async (req, res) => {
       return res.status(403).json({ success: false, message: "You can only delete your own posts" });
     }
 
-    await deleteFromCloudinary(post.media, post.mediaType === "video" ? "video" : "image");
     await post.deleteOne();
     await Promise.all([
       User.updateMany(
@@ -85,8 +84,20 @@ const deletePost = async (req, res) => {
       Notification.deleteMany({ post: post._id })
     ]);
 
+    let mediaCleanupWarning;
+    try {
+      await deleteFromCloudinary(post.media, post.mediaType === "video" ? "video" : "image");
+    } catch (error) {
+      console.error("Delete Post Media Error:", error);
+      mediaCleanupWarning = "Post deleted, but its media could not be removed from storage.";
+    }
+
     io.emit("postDeleted", { postId: post._id.toString() });
-    return res.status(200).json({ success: true, message: "Post deleted successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "Post deleted successfully",
+      ...(mediaCleanupWarning && { warning: mediaCleanupWarning })
+    });
   } catch (error) {
     console.error("Delete Post Error:", error);
     return res.status(500).json({ success: false, message: "Unable to delete post" });

@@ -36,7 +36,7 @@ const Post = ({post}) => {
 
       setIsDeleting(true)
       try{
-        await axios.delete(`${backendUrl}/api/post/${post._id}`,{withCredentials:true})
+        const result=await axios.delete(`${backendUrl}/api/post/${post._id}`,{withCredentials:true})
         dispatch(removePost(post._id))
         dispatch(setUserData({
           ...userData,
@@ -48,6 +48,9 @@ const Post = ({post}) => {
             ...profileData,
             posts:(profileData.posts || []).filter(item=>(item._id || item)!==post._id)
           }))
+        }
+        if(result.data.warning){
+          window.alert(result.data.warning)
         }
       }catch(error){
         window.alert(error.response?.data?.message || "Unable to delete post. Please try again.")

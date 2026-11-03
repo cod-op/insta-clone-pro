@@ -16,11 +16,14 @@ const Feed = () => {
   const {userData,notificationData}=useSelector(state=>state.user)
   const {storyList}=useSelector(state=>state.story)
  const navigate=useNavigate()
- const groupedStories=useMemo(()=>{
-   const groups=new Map()
-   ;(storyList || []).forEach(story=>{
-     const authorId=story.author?._id
-     if(!authorId || authorId===userData?._id) return
+  const ownFeedStories=(storyList || []).filter(story=>
+    (story.author?._id || story.author)?.toString()===userData?._id?.toString()
+  )
+  const groupedStories=useMemo(()=>{
+    const groups=new Map()
+    ;(storyList || []).forEach(story=>{
+      const authorId=story.author?._id
+      if(!authorId || authorId.toString()===userData?._id?.toString()) return
      if(!groups.has(authorId)){
        groups.set(authorId,{author:story.author,stories:[]})
      }
@@ -29,9 +32,9 @@ const Feed = () => {
    return [...groups.values()]
  },[storyList,userData?._id])
  const ownStories=useMemo(()=>{
-   const stories=[...(userData?.stories || []),userData?.story].filter(story=>story?._id)
+   const stories=[...(userData?.stories || []),userData?.story,...ownFeedStories].filter(story=>story?._id)
    return [...new Map(stories.map(story=>[story._id,story])).values()]
- },[userData?.stories,userData?.story])
+ },[ownFeedStories,userData?.stories,userData?.story])
 
   return (
     <div className='lg:w-[50%] w-full bg-black min-h-[100vh] lg:h-[100vh] relative lg:overflow-y-auto'>

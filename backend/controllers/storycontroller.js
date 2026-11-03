@@ -5,8 +5,8 @@ import User from '../models/usermodel.js'
 
 const uploadStory=async(req,res)=>{
     try{
-      const user=await User.findById(req.userId)
-      if (!user) {
+      const userExists=await User.exists({ _id: req.userId })
+      if (!userExists) {
             return res.status(404).json({
                  message: "User not found"
              });
@@ -25,9 +25,10 @@ const uploadStory=async(req,res)=>{
         author:req.userId,mediaType,media
       })
 
-      user.story=story._id
-      user.stories.push(story._id)
-      await user.save()
+      await User.updateOne(
+        { _id: req.userId },
+        { $set: { story: story._id }, $addToSet: { stories: story._id } }
+      )
       const populatedStory=await Story.findById(story._id)
       .populate("author","name userName profileImage")
       .populate("viewers","name userName profileImage")
