@@ -1,17 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {FaVolumeMute , FaVolumeUp } from "react-icons/fa";
 import dp from '../assets/dp.png'
-import { setReelData } from '../redux/reelSlice';
+import { removeReel, setReelData } from '../redux/reelSlice';
+import { setUserData } from '../redux/userSlice';
 import Follow from './Follow';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'
 import { IoIosHeartEmpty } from "react-icons/io";
 import { FaHeart } from "react-icons/fa6";
-import { MdOutlineComment } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineComment } from "react-icons/md";
 import { IoSend } from "react-icons/io5";
 import axios from 'axios';
 import { backendUrl } from '../App';
 import EmojiPicker from './EmojiPickerComponent';
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 const ReelCard = ({reel}) => {
     const {userData}=useSelector(state=>state.user)
@@ -24,9 +26,31 @@ const ReelCard = ({reel}) => {
     const [showHeart,setShowHeart]=useState(false)
     const [showComment,setShowComment]=useState(false)
     const [message,setMessage]=useState("")
+    const [showReelMenu,setShowReelMenu]=useState(false)
+    const [isDeleting,setIsDeleting]=useState(false)
     const navigate=useNavigate()
     const dispatch=useDispatch()
     const commentRef=useRef()
+    const isReelOwner=userData?._id===reel?.author?._id
+
+    const handleDelete=async()=>{
+      if(!window.confirm("Are you sure you want to delete this reel?")) return
+
+      setIsDeleting(true)
+      try{
+        await axios.delete(`${backendUrl}/api/reel/${reel._id}`,{withCredentials:true})
+        dispatch(removeReel(reel._id))
+        dispatch(setUserData({
+          ...userData,
+          reels:(userData?.reels || []).filter(item=>(item._id || item)!==reel._id)
+        }))
+      }catch(error){
+        window.alert(error.response?.data?.message || "Unable to delete reel. Please try again.")
+      }finally{
+        setIsDeleting(false)
+        setShowReelMenu(false)
+      }
+    }
     
 
     const handleTimeUpdate=()=>{
@@ -117,6 +141,8 @@ const ReelCard = ({reel}) => {
     },[])
 
     useEffect(()=>{
+       const handleReelDeleted=({reelId})=>dispatch(removeReel(reelId))
+       socket?.on("reelDeleted",handleReelDeleted)
        socket?.on("likedReel",(updatedData)=>{
         const updatedReels=reelData.map(p=>p._id===updatedData.reelId?{...p,likes:updatedData.likes}:p)
         dispatch(setReelData(updatedReels))
@@ -127,6 +153,7 @@ const ReelCard = ({reel}) => {
        })
        return ()=>{socket?.off("likedReel")
           socket?.off("commentedReel")
+          socket?.off("reelDeleted",handleReelDeleted)
        }
       },[socket,reelData,dispatch])
 
@@ -145,6 +172,16 @@ const ReelCard = ({reel}) => {
             {!mute?<FaVolumeUp className='w-[20px] h-[20px] text-white font-semibold'/>
                :<FaVolumeMute className='w-[20px] h-[20px] text-white font-semibold'/>}
          </div>
+         {isReelOwner && <div className="absolute top-[20px] right-[58px] z-[210]">
+           <button type="button" aria-label="Reel options" onClick={(event)=>{event.stopPropagation();setShowReelMenu(value=>!value)}} className="p-2 text-white rounded-full bg-black/40">
+             <BsThreeDotsVertical className="w-5 h-5"/>
+           </button>
+           {showReelMenu && <div className="absolute right-0 top-full min-w-[150px] rounded-xl bg-white py-1 text-black shadow-xl">
+             <button type="button" disabled={isDeleting} onClick={(event)=>{event.stopPropagation();handleDelete()}} className="w-full px-4 py-2 flex items-center gap-2 text-red-600 hover:bg-gray-100 disabled:opacity-50">
+               <MdDeleteOutline className="w-5 h-5"/>{isDeleting?"Deleting...":"Delete"}
+             </button>
+           </div>}
+         </div>}
 
          <div className='absolute bottom-0  w-full h-[3px] bg-gray-900'>
              <div className='w-[200px] h-full bg-white transition-all duration-200 ease-linear' style={{width:`${progress}%`}}>

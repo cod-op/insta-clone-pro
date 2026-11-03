@@ -8,7 +8,7 @@ import nodemon from "nodemon";
 const getCurrentUser=async(req,res)=>{
     try{
         const userId=req.userId;
-        const user=await User.findById(userId).populate("posts reels story posts.author posts.comments following");
+        const user=await User.findById(userId).populate("posts reels story stories stories.author stories.viewers posts.author posts.comments following");
         if(!user){
             return res.status(400).json({
                 message:"User not found !"

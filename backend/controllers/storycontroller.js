@@ -11,10 +11,6 @@ const uploadStory=async(req,res)=>{
                  message: "User not found"
              });
         }
-      if(user.story){
-        await Story.findByIdAndDelete(user.story)
-        user.story=null
-      }
       const {mediaType}=req.body;
       let media;
       if(req.file){
@@ -30,6 +26,7 @@ const uploadStory=async(req,res)=>{
       })
 
       user.story=story._id
+      user.stories.push(story._id)
       await user.save()
       const populatedStory=await Story.findById(story._id)
       .populate("author","name userName profileImage")
@@ -56,8 +53,9 @@ const viewStory=async(req,res)=>{
                 message:"Story not found"
             })
         }
-        if (story.author.toString() !== req.userId && !story.viewers.includes(req.userId)) {
-            story.viewers.push(req.userId);
+        if (story.author.toString() !== req.userId.toString() &&
+            !story.viewers.some(viewerId => viewerId.toString() === req.userId.toString())) {
+            story.viewers.addToSet(req.userId);
             await story.save();
         }
 
@@ -89,6 +87,7 @@ const getStoryByUserName=async (req,res)=>{
     }
      const story=await Story.find({author:user._id })
      .populate("viewers author")
+     .sort({ createdAt: 1 })
      return res.status(200).json({
       success: true,
       story
@@ -107,9 +106,11 @@ const getStoryByUserName=async (req,res)=>{
 const getAllStories=async(req,res)=>{
   try{
    const currentUser=await User.findById(req.userId)
-   const followingIds= await currentUser.following
+   if(!currentUser){
+      return res.status(404).json({ success:false, message:"User not found" })
+   }
+   const followingIds=[...currentUser.following, currentUser._id]
 
-   //find all author that are in following list
    const stories=await Story.find({
       author:{$in:followingIds}
    })

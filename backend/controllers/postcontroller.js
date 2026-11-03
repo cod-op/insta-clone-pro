@@ -1,4 +1,4 @@
-import uploadOncloudinary from "../config/cloudinary.js";
+import uploadOncloudinary, { deleteFromCloudinary } from "../config/cloudinary.js";
 import Notification from "../models/notificationmodel.js";
 import Post from '../models/postmodel.js'
 import User from "../models/usermodel.js";
@@ -60,6 +60,38 @@ const getAllPost = async (req, res) => {
     })
   }
 }
+
+const deletePost = async (req, res) => {
+  try {
+    if (!Post.base.Types.ObjectId.isValid(req.params.postId)) {
+      return res.status(400).json({ success: false, message: "Invalid post id" });
+    }
+
+    const post = await Post.findById(req.params.postId);
+    if (!post) {
+      return res.status(404).json({ success: false, message: "Post not found" });
+    }
+    if (post.author.toString() !== req.userId.toString()) {
+      return res.status(403).json({ success: false, message: "You can only delete your own posts" });
+    }
+
+    await deleteFromCloudinary(post.media, post.mediaType === "video" ? "video" : "image");
+    await post.deleteOne();
+    await Promise.all([
+      User.updateMany(
+        { $or: [{ _id: post.author }, { saved: post._id }] },
+        { $pull: { posts: post._id, saved: post._id } }
+      ),
+      Notification.deleteMany({ post: post._id })
+    ]);
+
+    io.emit("postDeleted", { postId: post._id.toString() });
+    return res.status(200).json({ success: true, message: "Post deleted successfully" });
+  } catch (error) {
+    console.error("Delete Post Error:", error);
+    return res.status(500).json({ success: false, message: "Unable to delete post" });
+  }
+};
 
 
 const like= async (req, res) => {
@@ -234,4 +266,4 @@ const saved = async (req, res) => {
   }
 };
 
-export {uploadPost,getAllPost,like,comment,saved}
+export {uploadPost,getAllPost,deletePost,like,comment,saved}

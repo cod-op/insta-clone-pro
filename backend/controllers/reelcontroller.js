@@ -1,6 +1,6 @@
 import Reel from '../models/reelmodel.js'
 import User from '../models/usermodel.js';
-import uploadOncloudinary from "../config/cloudinary.js";
+import uploadOncloudinary, { deleteFromCloudinary } from "../config/cloudinary.js";
 import Notification from "../models/notificationmodel.js";
 import { getSocketId, io } from "../socket.js";
 
@@ -61,6 +61,35 @@ const getAllReels = async (req, res) => {
     })
   }
 }
+
+const deleteReel = async (req, res) => {
+  try {
+    if (!Reel.base.Types.ObjectId.isValid(req.params.reelId)) {
+      return res.status(400).json({ success: false, message: "Invalid reel id" });
+    }
+
+    const reel = await Reel.findById(req.params.reelId);
+    if (!reel) {
+      return res.status(404).json({ success: false, message: "Reel not found" });
+    }
+    if (reel.author.toString() !== req.userId.toString()) {
+      return res.status(403).json({ success: false, message: "You can only delete your own reels" });
+    }
+
+    await deleteFromCloudinary(reel.media, "video");
+    await reel.deleteOne();
+    await Promise.all([
+      User.updateOne({ _id: reel.author }, { $pull: { reels: reel._id } }),
+      Notification.deleteMany({ reel: reel._id })
+    ]);
+
+    io.emit("reelDeleted", { reelId: reel._id.toString() });
+    return res.status(200).json({ success: true, message: "Reel deleted successfully" });
+  } catch (error) {
+    console.error("Delete Reel Error:", error);
+    return res.status(500).json({ success: false, message: "Unable to delete reel" });
+  }
+};
 
 
 const like= async (req, res) => {
@@ -193,4 +222,4 @@ const comment = async (req, res) => {
   }
 }
 
-export {getAllReels,uploadReel,like,comment}
+export {getAllReels,uploadReel,deleteReel,like,comment}

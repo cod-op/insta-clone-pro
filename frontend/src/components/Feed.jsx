@@ -2,6 +2,7 @@ import { IoMdHeartEmpty } from "react-icons/io";
 import logo from '../assets/logo.png'
 import StoryDp from './StoryDp.jsx'
 import Navbar from './Navbar.jsx';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { LuMessageSquareMore } from "react-icons/lu";
 import Post from './Post.jsx';
@@ -15,6 +16,22 @@ const Feed = () => {
   const {userData,notificationData}=useSelector(state=>state.user)
   const {storyList}=useSelector(state=>state.story)
  const navigate=useNavigate()
+ const groupedStories=useMemo(()=>{
+   const groups=new Map()
+   ;(storyList || []).forEach(story=>{
+     const authorId=story.author?._id
+     if(!authorId || authorId===userData?._id) return
+     if(!groups.has(authorId)){
+       groups.set(authorId,{author:story.author,stories:[]})
+     }
+     groups.get(authorId).stories.push(story)
+   })
+   return [...groups.values()]
+ },[storyList,userData?._id])
+ const ownStories=useMemo(()=>{
+   const stories=[...(userData?.stories || []),userData?.story].filter(story=>story?._id)
+   return [...new Map(stories.map(story=>[story._id,story])).values()]
+ },[userData?.stories,userData?.story])
 
   return (
     <div className='lg:w-[50%] w-full bg-black min-h-[100vh] lg:h-[100vh] relative lg:overflow-y-auto'>
@@ -35,9 +52,9 @@ const Feed = () => {
         </div> 
 
         <div className='flex  w-full overflow-auto gap-[10px] items-center p-[20px] '>
-           <StoryDp userName={"Your Story"} profileImage={userData?.profileImage} story={userData?.story}/> 
-           {storyList?.map((story,index)=>(
-            <StoryDp userName={story?.author?.userName} profileImage={story?.author?.profileImage} story={story} key={index}/>        
+           <StoryDp userName={"Your Story"} profileImage={userData?.profileImage} stories={ownStories}/>
+           {groupedStories.map(({author,stories})=>(
+            <StoryDp userName={author.userName} profileImage={author.profileImage} stories={stories} key={author._id}/>
            ))}        
         </div> 
 

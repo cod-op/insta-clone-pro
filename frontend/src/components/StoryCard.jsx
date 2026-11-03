@@ -1,34 +1,55 @@
 import React, { useEffect, useState } from "react";
 import dp from '../assets/dp.png'
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import VideoPlayer from "./VideoPlayer";
 import { IoIosEye } from "react-icons/io";
+import axios from "axios";
+import { backendUrl } from "../App";
+import { setStoryData, updateStory } from "../redux/storySlice";
 
-const StoryCard = () => {
+const StoryCard = ({onNext}) => {
     const {storyData}=useSelector(state=>state.story)
     const {userData}=useSelector(state=>state.user)
     const navigate=useNavigate()
+    const dispatch=useDispatch()
     const [progress,setProgress]=useState(0)
     const[showViewers,setShowViewers]=useState(false)
+    const storyId=storyData?._id
+    const storyAuthorId=storyData?.author?._id
 
     const isOwner = storyData?.author?.userName === userData?.userName;
 
     useEffect(()=>{
-           if (!storyData) return
+           if (!storyId) return
+           if(showViewers) return undefined
 
            const interval=setInterval(()=>{
                 setProgress(prev=>
                     {if(prev>=100){
                         clearInterval(interval)
-                        navigate('/')
+                        onNext()
                         return 100
                     }
                     return prev+1})
             },150)
             return ()=>clearInterval(interval)
-        },[navigate,storyData])
+        },[storyId,onNext,showViewers])
+
+    useEffect(()=>{
+        if(!storyId || storyAuthorId===userData?._id) return
+        let isCurrent=true
+        axios.get(`${backendUrl}/api/story/view/${storyId}`,{withCredentials:true})
+            .then(result=>{
+                if(isCurrent && result.data.story){
+                    dispatch(setStoryData(result.data.story))
+                    dispatch(updateStory(result.data.story))
+                }
+            })
+            .catch(error=>console.log("Error marking story as viewed:",error.response?.data || error.message))
+        return ()=>{isCurrent=false}
+    },[dispatch,storyId,storyAuthorId,userData?._id])
 
    if (!storyData) {
     return <div className="text-white text-center h-screen flex items-center justify-center">Loading Story...</div>

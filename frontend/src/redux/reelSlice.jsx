@@ -8,9 +8,12 @@ const reelSlice=createSlice({
     reducers:{
         setReelData:(state,action)=>{
             state.reelData=action.payload
+        },
+        removeReel:(state,action)=>{
+            state.reelData=state.reelData.filter(reel=>reel._id!==action.payload)
         }
     }
 })
 
-export const {setReelData}=reelSlice.actions;
+export const {setReelData,removeReel}=reelSlice.actions;
 export default reelSlice.reducer

@@ -11,19 +11,51 @@ import { IoSend } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { backendUrl } from '../App';
-import { setPostData } from '../redux/postSlice';
-import { setUserData } from '../redux/userSlice';
+import { removePost, setPostData } from '../redux/postSlice';
+import { setProfileData, setUserData } from '../redux/userSlice';
 import Follow from './Follow';
 import EmojiPicker from './EmojiPickerComponent';
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { MdDeleteOutline } from "react-icons/md";
 
 const Post = ({post}) => {
     const navigate=useNavigate()
     const {userData}=useSelector(state=>state.user)
+    const {profileData}=useSelector(state=>state.user)
     const { postData } = useSelector(state => state.post)
     const { socket } = useSelector(state => state.socket)
     const [showComment,setShowComment]=useState(false)
     const [message,setMessage]=useState("")
+    const [showPostMenu,setShowPostMenu]=useState(false)
+    const [isDeleting,setIsDeleting]=useState(false)
     const dispatch=useDispatch()
+    const isPostOwner=userData?._id===post?.author?._id
+
+    const handleDelete=async()=>{
+      if(!window.confirm("Are you sure you want to delete this post?")) return
+
+      setIsDeleting(true)
+      try{
+        await axios.delete(`${backendUrl}/api/post/${post._id}`,{withCredentials:true})
+        dispatch(removePost(post._id))
+        dispatch(setUserData({
+          ...userData,
+          posts:(userData?.posts || []).filter(item=>(item._id || item)!==post._id),
+          saved:(userData?.saved || []).filter(item=>(item._id || item)!==post._id)
+        }))
+        if(profileData?._id===post.author?._id){
+          dispatch(setProfileData({
+            ...profileData,
+            posts:(profileData.posts || []).filter(item=>(item._id || item)!==post._id)
+          }))
+        }
+      }catch(error){
+        window.alert(error.response?.data?.message || "Unable to delete post. Please try again.")
+      }finally{
+        setIsDeleting(false)
+        setShowPostMenu(false)
+      }
+    }
 
     const handleLike=async()=>{
       try{
@@ -67,6 +99,8 @@ const Post = ({post}) => {
     }
 
   useEffect(()=>{
+   const handlePostDeleted=({postId})=>dispatch(removePost(postId))
+   socket?.on("postDeleted",handlePostDeleted)
    socket?.on("likedPost",(updatedData)=>{
     const updatedPosts=postData.map(p=>p._id===updatedData.postId?{...p,likes:updatedData.likes}:p)
     dispatch(setPostData(updatedPosts))
@@ -77,6 +111,7 @@ const Post = ({post}) => {
    })
    return ()=>{socket?.off("likedPost")
       socket?.off("commentedPost")
+      socket?.off("postDeleted",handlePostDeleted)
    }
   },[socket,postData,dispatch])
 
@@ -92,7 +127,18 @@ const Post = ({post}) => {
                 </div>
             </div>
 
-            {userData._id!=post.author._id  &&
+            {isPostOwner ? (
+             <div className="relative">
+               <button type="button" aria-label="Post options" onClick={()=>setShowPostMenu(value=>!value)} className="p-2 rounded-full hover:bg-gray-100">
+                 <BsThreeDotsVertical className="w-5 h-5"/>
+               </button>
+               {showPostMenu && <div className="absolute right-0 top-full z-30 min-w-[150px] rounded-xl bg-white py-1 shadow-xl border border-gray-200">
+                 <button type="button" disabled={isDeleting} onClick={handleDelete} className="w-full px-4 py-2 flex items-center gap-2 text-red-600 hover:bg-gray-100 disabled:opacity-50">
+                   <MdDeleteOutline className="w-5 h-5"/>{isDeleting?"Deleting...":"Delete"}
+                 </button>
+               </div>}
+             </div>
+            ) : userData?._id!==post.author?._id  &&
              <Follow targetUserId={post?.author?._id} tailwind={ 'flex justify-center items-center px-[10px] w-[80px] md:w-[100px] py-[5px] h-[30px] md:h-[40px] bg-black text-white rounded-2xl text-[14px] md:text-[16px] cursor-pointer'}/> 
             }        
          </div>
