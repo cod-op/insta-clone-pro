@@ -11,30 +11,49 @@ const uploadStory=async(req,res)=>{
                  message: "User not found"
              });
         }
-      const {mediaType}=req.body;
-      let media;
-      if(req.file){
-         media= await uploadOncloudinary(req.file.path)
-      }else{
+      if(!req.files?.length){
         return res.status(400).json({
             message:"media is required"
         })
       }
 
-      const story=await Story.create({
-        author:req.userId,mediaType,media
-      })
+      const uploadedStoryIds=[]
+      const failedUploads=[]
+      for(const file of req.files){
+        try{
+          const media=await uploadOncloudinary(file.path)
+          const mediaType=file.mimetype.startsWith("video/") ? "video" : "image"
+          const story=await Story.create({author:req.userId,mediaType,media})
+          await User.updateOne(
+            { _id: req.userId },
+            { $set: { story: story._id }, $addToSet: { stories: story._id } }
+          )
+          uploadedStoryIds.push(story._id)
+        }catch(error){
+          console.error("Story Upload Item Error:",error)
+          failedUploads.push(file.originalname)
+        }
+      }
 
-      await User.updateOne(
-        { _id: req.userId },
-        { $set: { story: story._id }, $addToSet: { stories: story._id } }
-      )
-      const populatedStory=await Story.findById(story._id)
+      if(uploadedStoryIds.length===0){
+        return res.status(500).json({
+          success:false,
+          message:"No stories could be uploaded. Please check the media and try again."
+        })
+      }
+
+      const populatedStories=await Story.find({_id:{$in:uploadedStoryIds}})
       .populate("author","name userName profileImage")
       .populate("viewers","name userName profileImage")
+      .sort({createdAt:1})
 
       return res.status(200).json({
-        story:populatedStory
+        success:true,
+        stories:populatedStories,
+        story:populatedStories[populatedStories.length-1],
+        ...(failedUploads.length>0 && {
+          warning:`${failedUploads.length} file(s) could not be uploaded: ${failedUploads.join(", ")}`
+        })
       })
    }catch(error){
          console.error("Story Upload Error:", error);

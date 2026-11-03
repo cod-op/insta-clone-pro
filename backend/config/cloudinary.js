@@ -13,12 +13,12 @@ try{
 .upload(file,{
     resource_type:'auto'
 })
-fs.unlinkSync(file)
   return result.secure_url
 }
-catch(error){
-    fs.unlinkSync(file)
-    console.log(error);
+finally{
+    if(fs.existsSync(file)){
+        fs.unlinkSync(file)
+    }
 }
 }
 export default uploadOncloudinary;

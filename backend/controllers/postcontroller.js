@@ -76,7 +76,7 @@ const deletePost = async (req, res) => {
     }
 
     await post.deleteOne();
-    await Promise.all([
+    const cleanupResults = await Promise.allSettled([
       User.updateMany(
         { $or: [{ _id: post.author }, { saved: post._id }] },
         { $pull: { posts: post._id, saved: post._id } }
@@ -84,19 +84,28 @@ const deletePost = async (req, res) => {
       Notification.deleteMany({ post: post._id })
     ]);
 
-    let mediaCleanupWarning;
+    const cleanupWarnings = [];
+    cleanupResults.forEach((result, index) => {
+      if (result.status === "rejected") {
+        console.error(index === 0 ? "Delete Post References Error:" : "Delete Post Notifications Error:", result.reason);
+        cleanupWarnings.push(index === 0
+          ? "Some user post references could not be updated."
+          : "Post notifications could not be removed.");
+      }
+    });
+
     try {
       await deleteFromCloudinary(post.media, post.mediaType === "video" ? "video" : "image");
     } catch (error) {
       console.error("Delete Post Media Error:", error);
-      mediaCleanupWarning = "Post deleted, but its media could not be removed from storage.";
+      cleanupWarnings.push("Post media could not be removed from storage.");
     }
 
     io.emit("postDeleted", { postId: post._id.toString() });
     return res.status(200).json({
       success: true,
       message: "Post deleted successfully",
-      ...(mediaCleanupWarning && { warning: mediaCleanupWarning })
+      ...(cleanupWarnings.length > 0 && { warning: cleanupWarnings.join(" ") })
     });
   } catch (error) {
     console.error("Delete Post Error:", error);

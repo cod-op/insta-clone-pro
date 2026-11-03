@@ -53,7 +53,15 @@ const Post = ({post}) => {
           window.alert(result.data.warning)
         }
       }catch(error){
-        window.alert(error.response?.data?.message || "Unable to delete post. Please try again.")
+        const status=error.response?.status
+        const responseMessage=error.response?.data?.message
+        const message=responseMessage || (status===404
+          ? "The post delete endpoint is not available on the backend yet. Restart or redeploy the backend and try again."
+          : status
+            ? `Post deletion failed (HTTP ${status}). Please try again.`
+            : "Could not reach the server. Check your connection and try again.")
+        console.error("Delete post request failed:",error.response?.data || error.message)
+        window.alert(message)
       }finally{
         setIsDeleting(false)
         setShowPostMenu(false)
